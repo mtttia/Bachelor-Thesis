@@ -590,21 +590,6 @@ La valutazione delle metriche sui dataset ONOT e TONO ha seguito i seguenti proc
 \end{enumerate}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
-Il software TONO ha 2 cartelle contenti immagini che riportano il difetto dello sguardo frontale: 
-\begin{itemize}
-    \item \textit{la\_1}: Immagini di volti con lo sguardo rivolto verso destra
-    \item \textit{la\_2}: Immagini di volti con lo sguardo rivolto verso sinistra
-\end{itemize}
-I risultati verranno riportati divisi per entrambi le cartelle. \\
-Risultati per la cartella \textit{la\_1} \\
-\texttt{Equal Error Rate}: 	15.8\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_algo} \\
-Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo} \\
-Risultati per la cartella \textit{la\_2} \\
-\texttt{Equal Error Rate}: 	11.1\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo} \\
-Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo} \\
-
 \begin{figure}
     \centering
     \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-algo.png}
@@ -633,14 +618,30 @@ Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo} \\
     \label{fig:box_plot_tono_onot_l2_frontal_gaze_algo}
 \end{figure}
 
+Il software TONO ha 2 cartelle contenti immagini che riportano il difetto dello sguardo frontale: 
+\begin{itemize}
+    \item \textit{la\_1}: Immagini di volti con lo sguardo rivolto verso destra
+    \item \textit{la\_2}: Immagini di volti con lo sguardo rivolto verso sinistra
+\end{itemize}
+I risultati verranno riportati divisi per entrambi le cartelle. \\
+Risultati per la cartella \textit{la\_1} \\
+\texttt{Equal Error Rate}: 	15.8\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_algo} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo} \\
+Risultati per la cartella \textit{la\_2} \\
+\texttt{Equal Error Rate}: 	11.1\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo} \\
+
+
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
 Come introdotto precedentemente, i risultati verranno riportati sia per la cartella \textit{la\_1} che per la cartella \textit{la\_2}
 Risultati per la cartella \textit{la\_1} \\
-\texttt{Equal Error Rate}: 	0.6\%. \\
+\texttt{Equal Error Rate}: 	18.8\%. \\
 Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs} \\
 Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs} \\
 Risultati per la cartella \textit{la\_2} \\
-\texttt{Equal Error Rate}: 	3.1\%. \\
+\texttt{Equal Error Rate}: 	29.7\%. \\
 Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs} \\
 Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs} \\
 

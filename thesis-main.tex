@@ -8,10 +8,11 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{cleveref}
+\usepackage[italian]{babel}
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
-\title{Open Source Face Image Quality: valutazione e contribuzione}
+\title{Analisi e sviluppo di algoritmi per la valutazione della qualità delle immagini del volto}
 \author{Senni Mattia}
 \date{\today}
 \subject{Visione Artificiale}
@@ -21,9 +22,7 @@
 \academicyear{2024-2025}
 
 % Definition of acronyms
-\acrodef{IoT}{Internet of Thing}
-\acrodef{vm}[VM]{Virtual Machine}
-
+% \acrodef{IoT}{Internet of Thing}
 
 \mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
 
@@ -83,6 +82,7 @@ Successivamente si è testata ogni singola metrica comparando diversi dataset di
 \note{At the end, describe the structure of the paper}
 
 \chapter{Implementazione della metrica per il rilevamento del difetto degli occhi rossi}
+\label{chap:red-eye}
 
 \section{Obbiettivo della metrica}
 L'obbiettivo di questa metrica è quello di rilevare il difetto degli occhi rossi all'interno di un viso. 
@@ -266,11 +266,11 @@ Una visione grafica dei rapporti sopra elencati è disponibile
 \end{enumerate}
 
 \chapter{Rilevamento dello sguardo frontale tramite CNN}
-\subsection{Selta del modello}
+\section{Selta del modello}
 Dopo un'attenta analisi sui modelli stato dell'arte nel task del rilevamento dello sguardo si è trovato come riferimento l'implementazione della rete neurale descritta all'interno del paper \cite[L2CS-NET: FINE-GRAINED GAZE ESTIMATION IN UNCONSTRAINED ENVIRONMENTS]{10372944}.
 Il modello descritto in questo paper si propone di prevedere lo sguardo in ambienti non vincolati, dando una stima degli angoli Pitch e Yaw del volto in radianti.
 
-\subsection{Utilizzo del modello}
+\section{Utilizzo del modello}
 Il modello L2CS-NET viene distribuito sotto forma di pacchetto Python.
 Il pacchetto espone un API tramite la quale è possibile far processare un'immagine ed ottenere per ogni volto dell'immagine gli angoli Pitch e Yaw.
 Il modello L2CS-NET è costruito mediante il framework Pytorch ed è quindi un modello Pytorch, per poter utilizzare il modello all'interno del software OFIQ è necessario covnertire il modello al formato Onnx, un formato open utilizzato per rappresentare i modelli di machine learning.
@@ -289,7 +289,7 @@ Inoltre il pacchetto Python di L2CS-NET esegue il preprocessa dell'immagine tram
 \end{itemize}
 I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'interno del software OFIQ tramite la libreria open cv per cpp, mentre per trovare il bounding box del volto all'interno dell'immagine viene utilizzato il modello "SSD Face Detector CNN" che riporta risultati molto simili a quelli di RetinaFace, la scelta di utilizzare questo modello è dettata dal fatto di averlo già a disposizione all'interno del software in formato Onnx.
 
-\subsection{Implementazione della metrica}
+\section{Implementazione della metrica}
 
 \subsection{Dati di Input}
 \begin{itemize}
@@ -337,93 +337,106 @@ I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'i
 \end{enumerate}
 
 \chapter{Strumenti utilizzati per lo sviluppo delle metriche}
+
 \section{Software OFIQ}
-Il software OFIQ, acronimo di Open Source Face Image Quality, è un software open source sviluppato per implementare le metriche descritte nel draft dello standard ISO 29794-5.
-Il software è scritto in linguaggio C++ e dispone di CMake file per la compilazione su sistemi Linux, Windows e MacOS.
-Il software al suo interno utilizza librerie quali OpenCV per la gestione delle immagini ed OnnxRuntime per l'esecuzione dei modelli Onnx.
-Il software inizialmente presentava un'implementazione fedele di tutte le metriche presentati nello standard ISO 29794-5 restituendo in output un valore per ogni metrica grezzo ed un valore normalizzato tra 0 e 100 (utile come score).
-Il software OFIQ al suo interno contiene delle utility che permettono l'utilizzo dei seguenti modelli (presenti in formato Onnx): \begin{itemize}
-    \item SSD Face Detector CNN: modello per il rilevamento dei volti all'interno di un'immagine.
-    \item ADNet: Modello per l'estrazione dei landmark facciali.
+Il software OFIQ, acronimo di \textit{Open Source Face Image Quality}, è un progetto open source sviluppato per implementare le metriche descritte nel draft dello standard ISO 29794-5.
+È scritto in linguaggio C++ e dispone di file CMake per la compilazione su sistemi Linux, Windows e macOS.
+Al suo interno utilizza librerie come OpenCV per la gestione delle immagini e OnnxRuntime per l'esecuzione dei modelli Onnx.
+Inizialmente presentava un'implementazione fedele di tutte le metriche riportate nello standard ISO 29794-5, restituendo in output un valore grezzo ed un valore normalizzato tra 0 e 100 (utile come \textit{score}) per ciascuna metrica.
+OFIQ include inoltre delle utility che permettono l'utilizzo dei seguenti modelli (in formato Onnx): 
+\begin{itemize}
+    \item SSD Face Detector CNN: modello per il rilevamento dei volti in un'immagine.
+    \item ADNet: modello per l'estrazione dei landmark facciali.
 \end{itemize}
-Il software presenta l'implementazione delle seguenti metriche: \begin{itemize}
-    \item Quality Score: uno score generale dell'immagine ottenuto tramite l'utilizzo del modello MagFace..
-    \item Background uniformity: misura l'uniformità del background.
-    \item Illumination uniformity: misura l'uniformità di illuminazione eseguendo il rapporto tra l'illuminazione della parte destra e sinistra del volto.
-    \item Luminance mean: verifica che l'immagine abbia un'illuminazione adeguata e uniforme.
-    \item Luminance variance: misura i constasti nell'immagine.
-    \item Under-exposure prevention: verifica che l'immagine abbia troppi pixel con una bassa luminosità.
-    \item Over-exposure prevention:  verifica che l'immagine abbia troppi pixel con un'alta luminosità.
-    \item Dynamic range: misura quanta variazione di intensità luminosa è presente nella regione del volto, assicurandosi che non sia tutta troppo scura o troppo chiara.
-    \item Sharpness: valuta la nitidezza di un'immagine (la corretta messa a fuoco).
-    \item No compression artifacts: valuta la presenza di artefatti di compressione, assicurandosi che l'immagine non sia stata eccessivamente compressa.
-    \item Natural colour: valuta la naturalezza del colore della pelle in un'immagine del volto.
-    \item Single face present: valuta la presenza di un singolo volto nell'immagine.
-    \item Eyes open: verifica che entrambi gli occhi siano aperti in maniera naturale.
+
+Il software implementa le seguenti metriche: 
+\begin{itemize}
+    \item Quality Score: uno score generale dell'immagine ottenuto tramite il modello MagFace.
+    \item Background uniformity: misura l'uniformità dello sfondo.
+    \item Illumination uniformity: misura l'uniformità dell'illuminazione confrontando la parte destra e sinistra del volto.
+    \item Luminance mean: verifica che l'immagine presenti un'illuminazione adeguata e uniforme.
+    \item Luminance variance: misura i contrasti nell'immagine.
+    \item Under-exposure prevention: verifica che l'immagine non contenga troppi pixel con bassa luminosità.
+    \item Over-exposure prevention: verifica che l'immagine non contenga troppi pixel con alta luminosità.
+    \item Dynamic range: misura la variazione di intensità luminosa nella regione del volto, assicurando che non sia completamente scura o chiara.
+    \item Sharpness: valuta la nitidezza dell'immagine (corretta messa a fuoco).
+    \item No compression artifacts: valuta la presenza di artefatti di compressione, assicurando che l'immagine non sia stata eccessivamente compressa.
+    \item Natural colour: valuta la naturalezza del colore della pelle.
+    \item Single face present: verifica la presenza di un singolo volto.
+    \item Eyes open: controlla che entrambi gli occhi siano aperti in modo naturale.
     \item Mouth closed: verifica che la bocca sia chiusa.
-    \item Eyes visible: verifica che in entrambi gli occhi sia visibile pupilla ed iride.
-    \item Mouth occlusion prevention: verifica la non occlusione della bocca
-    \item Face occlusion prevention: verifica che la regione del viso dalla sommità del capo alla base del mento e da un orecchio all'altro, sia chiaramente visibile.
-    \item Inter-eye distance: verifica in pixel la distanza tra gli occhi nel volto
-    \item Head size: valuta la dimensione del volto nell'immagine per evitare volti troppo vicini alla telecamera
-    \item Leftward crop of face in image: verifica che il volto non sia decentrato sulla sinistra.
-    \item RIghtward crop of face in image: verifica che il volto non sia decentrato sulla destra.
-    \item Downward crop of face in image: verifica che il volto non sia decentrato in basso.
-    \item Upward crop of face in image: verifica che il volto non sia decentrato in alto.
-    \item Pose angle yaw frontal alignment: verifica che l'angolo yaw del volto sia minore di \(\pm 5\) dal frontale.
-    \item Pose angle pitch frontal alignment: verifica che l'angolo pitch del volto sia minore di \(\pm 5\) dal frontale.
-    \item Pose angle roll frontal alignment: verifica che l'angolo roll del volto sia minore di \(\pm 8\) dal frontale.
-    \item Expression neutrality: verifica che la faccia abbia un'espressione neutrale.
-    \item No head covering: verifica che il soggetto non stia indossando qualcosa che copra la testa (eg un cappello).
+    \item Eyes visible: verifica che siano visibili pupilla e iride in entrambi gli occhi.
+    \item Mouth occlusion prevention: controlla che la bocca non sia occlusa.
+    \item Face occlusion prevention: verifica che la regione del volto (dalla sommità del capo al mento e da orecchio a orecchio) sia chiaramente visibile.
+    \item Inter-eye distance: misura in pixel la distanza tra gli occhi.
+    \item Head size: valuta la dimensione del volto per evitare immagini troppo ravvicinate.
+    \item Leftward crop of face: verifica che il volto non sia decentrato a sinistra.
+    \item Rightward crop of face: verifica che il volto non sia decentrato a destra.
+    \item Downward crop of face: verifica che il volto non sia decentrato in basso.
+    \item Upward crop of face: verifica che il volto non sia decentrato in alto.
+    \item Pose angle yaw frontal alignment: verifica che l'angolo \textit{yaw} del volto sia inferiore a \(\pm 5^\circ\) dal frontale.
+    \item Pose angle pitch frontal alignment: verifica che l'angolo \textit{pitch} del volto sia inferiore a \(\pm 5^\circ\) dal frontale.
+    \item Pose angle roll frontal alignment: verifica che l'angolo \textit{roll} del volto sia inferiore a \(\pm 8^\circ\) dal frontale.
+    \item Expression neutrality: verifica che il volto presenti un'espressione neutrale.
+    \item No head covering: verifica che il soggetto non indossi copricapi (ad esempio un cappello).
 \end{itemize}
 
 \section{Dataset utilizzati per la valutazione}
-I seguenti dataset sono stati utilizzati per valutare la valutazione delle metriche implementate.
+I seguenti dataset sono stati utilizzati per la valutazione delle metriche implementate.
+
 \subsection{ONOT}
 ONOT è un dataset introdotto nel paper \cite[ONOT: a High-Quality ICAO-compliant Synthetic Mugshot Dataset]{di2024onot}.
-Si tratta di un dataset composto da immagini sintetiche di alta qualità conformi ai requisiti delllo standard ISO/IEC 39794-5.
-Definisce un formato di per lo scambio di immagini facciali in electronic Machine-Readable Travel Documents (eMRTD), seguendo le linee guida del International Civil Aviation Organization (ICAO).
-Le immagini presenti in questo dataset presentano volti di diverse etnie, età, genere e tratti facciali, rendendo questo dataset perfetto per testare le metriche implementate.
-Del dataset TONO sono state prese le sole immagini del \textit{Subset 1} ICAO compliant.
+È composto da immagini sintetiche di alta qualità conformi ai requisiti dello standard ISO/IEC 39794-5.
+Quest'ultimo definisce un formato per lo scambio di immagini facciali negli \textit{electronic Machine-Readable Travel Documents} (eMRTD), seguendo le linee guida dell'International Civil Aviation Organization (ICAO).
+Le immagini di ONOT includono volti di diverse etnie, età, generi e caratteristiche facciali, rendendo il dataset adatto alla valutazione delle metriche implementate.
+Per questa analisi sono state considerate le sole immagini del \textit{Subset 1}, ICAO compliant.
 
 \subsection{TONO}
 TONO è un dataset introdotto nel paper \cite[TONO: a synthetic dataset for face image compliance to ISO/ICAO standard]{borghi2024tono}.
-Si tratta di un dataset composto da immagini sintetiche di volti di alta qualità costruito per sviluppare e valutare sistemi volti a verificare la conformità in un immagine di un volto allo standard ISO/ICAO.
-Le immagini di Tono sono state create partendo dal dataset ONOT (\cite{di2024onot}) con uno o più elementi non conformi allo standard ISO/ICAO.
-I difetti presenti in TONO sono i seguenti: \begin{itemize}
-    \item Head and Shoulder Pose: assenza di posa frontal sia del volto che delle spalle.
+È costituito da immagini sintetiche di volti ad alta qualità, create per sviluppare e valutare sistemi di verifica della conformità delle immagini facciali allo standard ISO/ICAO.
+Le immagini di TONO derivano dal dataset ONOT (\cite{di2024onot}), con l'aggiunta di uno o più elementi non conformi agli standard.
+I difetti presenti in TONO sono i seguenti: 
+\begin{itemize}
+    \item Head and Shoulder Pose: assenza di posa frontale sia del volto che delle spalle.
     \item Gaze Direction: assenza di sguardo frontale.
-    \item Expression: assenza di espressione neutrale o denti visibili.
-    \item Face Illumination: assenza di uniformità nell'illuminazione del volto.
-    \item Background: background non uniforme.
-    \item Head Coverings: presenza di copri capo.
-    \item Eye Visibility: presenza di occhi chiusi con e senza occhiali, mackeup troppo presente, presenza di occhiali da sole.
-    \item Photographic: presenza dei difetti di: pixelazione, posterizzazione, sfocato, sovraesposizione, sovrasaturazione.
+    \item Expression: mancanza di espressione neutrale o presenza di denti visibili.
+    \item Face Illumination: non uniformità dell'illuminazione del volto.
+    \item Background: sfondo non uniforme.
+    \item Head Coverings: presenza di copricapi.
+    \item Eye Visibility: occhi chiusi, presenza di occhiali (da vista o da sole), make-up eccessivo.
+    \item Photographic: difetti quali pixelazione, posterizzazione, sfocatura, sovraesposizione, sovrasaturazione.
 \end{itemize}
+Per questa casistica è stata utilizzata la versione di TONO in cui ogni immagine contiene un solo elemento in contrasto con i requisiti ISO/ICAO.
 
 \section{Onnx e OnnxRuntime}
-ONNX (Open Neural Network Exchange) è un formato open source per rappresentare modelli di machine learning, progettato per essere compatibile tra diversi framework (PyTorch, TensorFlow, etc.).
-Permette di salvare un modello in un file .onnx indipendente dall'ambiente di training.
-La libreria Onnx Runtime predispone API per essere utilizzata da diversi linguaggi di programmazione e su diverse piattaforme (tra cui i web browser).
-Il progetto nasce da Microsoft ed il sorgente è disponibile alla seguente reporitory github: \href{https://github.com/microsoft/onnxruntime}{https://github.com/microsoft/onnxruntime}.
+ONNX (\textit{Open Neural Network Exchange}) è un formato open source per la rappresentazione di modelli di machine learning, progettato per garantire compatibilità tra diversi framework (PyTorch, TensorFlow, ecc.).
+Permette di salvare un modello in un file \texttt{.onnx} indipendente dall'ambiente di training.
+La libreria OnnxRuntime fornisce API utilizzabili da diversi linguaggi di programmazione e su diverse piattaforme (inclusi i web browser).
+Il progetto, sviluppato da Microsoft, è disponibile al seguente repository GitHub: \href{https://github.com/microsoft/onnxruntime}{https://github.com/microsoft/onnxruntime}.
 
 \section{FVC Ongoing}
-FVC Ongoing (\cite{fvcongoing}) è una piattaforma web che permette di valutare algoritmi di vario tipo tra cui il task Face Image ISO Compliance Verification, I test vengono effettuati tramite diversi dataset e metriche note.
+FVC Ongoing (\cite{fvcongoing}) è una piattaforma web che consente la valutazione di algoritmi di vario tipo, tra cui il task \textit{Face Image ISO Compliance Verification}.
+I test vengono condotti su diversi dataset e metriche note.
 
-\section{Framework Pytorch}
-Il linguaggio di programmazione Python ed il framework Pytorch sono comunemente utilizzati per l'addestramento e la distribuzione di modelli di Machine Learning. Il loro impiego all'interno del progetto è relativo al testing ed alla conversione in formato onnx del modello L2CS-Net, distribuito come modello Pytorch.
-Del framework Pytorch è stato utilizziato in particolare il modulo "ONNX exporter API" che permette di esportare un modello Pytorch in formato Onnx, utilizzato per la conversione di L2CS-Net tramite il seguente codice: \cref{lst:onnx-exporter}
+\section{Framework PyTorch}
+Il linguaggio di programmazione Python ed il framework PyTorch sono comunemente utilizzati per l'addestramento e la distribuzione di modelli di Machine Learning. 
+Nel progetto il loro impiego riguarda principalmente il testing e la conversione in formato Onnx del modello L2CS-Net, originariamente distribuito in PyTorch.
+In particolare, è stato utilizzato il modulo \texttt{ONNX exporter API}, che consente di esportare un modello PyTorch in formato Onnx, impiegato per la conversione di L2CS-Net tramite il seguente codice: \cref{lst:onnx-exporter}
 
 \lstinputlisting[float,language=Python,label={lst:onnx-exporter}]{listings/onnx_exporter.py}
 
 \section{Jupyter Notebook, Numpy e Matplotlib}
-Jupyter Notebook, Numpy e MatplotLib sono state utilizzati per creare documenti interattivi per mostrare sotto forma di grafici boxplot e istogrammi le performance delle metriche di valutazione sui dataset disponibili, in questo caso Onot, Tono ed un sottoinsieme di Biolab.
-Il linguaggio python è stato utilizzato anche per task quali \begin{itemize}
-    \item Divisione dei dataset in base al file txt di riferimento
-    \item Elaborazione delle metriche volte a valutare il software OFIQ e gli algoritmi proposti
+Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab.
+Il linguaggio Python è stato inoltre impiegato per:
+\begin{itemize}
+    \item suddividere i dataset in base ai file di riferimento in formato \texttt{.txt};
+    \item elaborare le metriche per valutare il software OFIQ e gli algoritmi proposti.
 \end{itemize}
 
 \chapter{Valutazione delle metriche}
+
+\section{Introduzione alle valutazioni}
+Per quanto riguarda le valutazioni del software OFIQ verranno riportate ed analizzate le sole valutazioni delle metriche implementate nelle loro diverse versioni. In particolare per ogni metrica verranno analizzati \texttt{Equal Error Rate} e Distribuzione dei risultati.
 
 \section{Valutazione su FVC-Ongoing}
 
@@ -435,14 +448,16 @@ Nel caso di questo progetto le metriche da valutare sarranno \begin{itemize}
 \end{itemize}
 \begin{table}[h!]
 \centering
-\begin{tabular}{|c|p{8cm}|c|}
+\begin{tabular}{|c|p{10cm}|}
 \hline
-\textbf{N°} & \textbf{Description of the test}  \\
+\textbf{N°} & \textbf{Description of the test} \\
 \hline
 \multicolumn{2}{|l|}{\textbf{Feature extraction accuracy tests}} \\
+\hline
 1 & Eye center location accuracy \\
 \hline
 \multicolumn{2}{|l|}{\textbf{Photographic and pose-specific tests}} \\
+\hline
 2 & Blurred \\
 3 & Looking away \\
 4 & Ink marked/creased \\
@@ -472,6 +487,7 @@ Nel caso di questo progetto le metriche da valutare sarranno \begin{itemize}
 \label{tab:fvc-table}
 \end{table}
 
+
 \subsection{Il protocollo}
 Per la sottomissione degli algoritmi sulla piattaforma FVC-Ongoing è necessario rispettare il seguente standard: \begin{itemize}
     \item è necessario sottoporre una cartella in formato ZIP
@@ -481,23 +497,181 @@ Per la sottomissione degli algoritmi sulla piattaforma FVC-Ongoing è necessario
         \item outputfile: è il percorso del file TXT di output dove dovrà essere scritta in modalità 'append' una stringa rappresentante l'esito dei test
     \end{itemize}
     \item Ogni linea del outputfile dovrà contenere i campi seguenti separati da uno spazio vuoto: \begin{itemize}
-        \item ImageName: il nome file dell'immagine
-        \item RetVal: 
+        \item \texttt{ImageName}: il nome file dell'immagine
+        \item \texttt{RetVal}: intero che indica se l'immagine può essere processata \begin{itemize}
+            \item 1: immagine processabile
+            \item 0: immagine non processabile
+            \item -1: dimensione dell'immagine non supportata
+            \item -2: formato immagine non supportato
+            \item -3: contenuto dell'immagine non processabile
+        \end{itemize}
+        \item \texttt{LE\_x}: intero, coordinata X del centro dell'occhio destro (in pixel)
+        \item \texttt{LE\_y}: intero, coordinata Y del centro dell'occhio destro (in pixel)
+        \item \texttt{RE\_x}: intero, coordinata X del centro dell'occhio sinistro (in pixel)
+        \item \texttt{RE\_y}: intero, coordinata Y del centro dell'occhio sinistro (in pixel)
+        \item \texttt{Test\_2}: intero da 0 a 100 indicante il grado di conformità dell'immagine di input rispetto al test 2. 0 significa non conformità, 100 significa massima complicità, è possibile rispondere anche con i seguenti caratteri: \begin{itemize}
+            \item '-': se il programma non è in grado di valutare questa metrica 
+            \item '?': se il programma supporta la valutazione di questa metrica ma non è in grado di valutarla nell'immagine corrente per un determinato motivo
+            \item '!': se il programma supporta la valutazione di questa metrica ma non è in grado di valutarla nell'immagine corrente per un modivo indefinito
+        \end{itemize}
+        \item ...
+        \item \texttt{Test\_24}: analogo al test 2 ma relativo al 24
     \end{itemize}
+    \item L'eseguibile ha inoltre il permesso in scrittura solamente sul file di output e può caricare tutti i suoi file di configurazione in modalità lettura
 \end{itemize}
+Dopo un analisi del protocollo richiesto dalla piattaforma FVC-Ongoing è stato necessario rendere il software OFIQ conforme al protocollo ed adattare le metriche di OFIQ a quelle richieste.Valutazione 
 
-\chapter{State of the art}
-
-I suggest referencing stuff as follows: \cref{fig:random-image} or \Cref{fig:random-image}
+\subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione HSV)}
+La valutazione della metrica del difetto degli occhi rossi è divisa in 2 parti, nella prima parte verranno analizzati i risultati ottenuti tramite l'algoritmo che utilizza lo spazio colore HSV per determinare la presenza degli occhi rossi, mentre nella seconda parte verrà analizzato quello che utilizza lo spazio colore yCbCr. \\
+L'\texttt{Equal Error Rate} è 18.1\%. \\
+Mentre la distribuzione degli score è rappresenta nel grafico \Cref{fig:score_distribution_red_eye_with_hsv}. 
 
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/random-image.pdf}
-    \caption{Some random image}
-    \label{fig:random-image}
+    \includegraphics[width=.8\linewidth]{figures/score-distribution-red-eye-with-hsv.png}
+    \caption{Distribuzione dei risultati metrica rilevamento del difetto degli occhi rossi, versione HSV}
+    \label{fig:score_distribution_red_eye_with_hsv}
 \end{figure}
 
-\section{Some cool topic}
+\subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione yCbCr)}
+La versione dell'algoritmo che rileva il difetto degli occhi rossi tramite l'utilizzo dello spazio colori yCbCr ottiene risultati migliori rispetto al precedente. \\
+\texttt{Equal Error Rate}: 	14.6\%. \\
+La distribuzione degli score è rappresenta nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/score-distribution-red-eye-with-ycbcr.png}
+    \caption{Distribuzione dei risultati metrica rilevamento del difetto degli occhi rossi, versione yCbCr}
+    \label{fig:score_distribution_red_eye_with_ycbcr}
+\end{figure}
+
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
+I risultati ottenuto nella valutazione di questo difetto tramite il metodo algoritmico rientrano nella media dei risultati ottenute dagli algoritmi pubblicati sulla piattaforma. \\
+\texttt{Equal Error Rate}: 	17.1\%. \\
+La distribuzione degli score è rappresenta nel grafico \Cref{fig:score_distribution_frontal_gaze_algo}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/score-distribution-frontal-gaze-algo.png}
+    \caption{Distribuzione dei risultati metrica rilevamento del difetto dello sguardo frontale, versione algoritmica}
+    \label{fig:score_distribution_frontal_gaze_algo}
+\end{figure}
+
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
+L'utilizzo di una CNN (L2CS-Net) in grado di predire l'angolatura dello sguardo di un volto per classificare se lo sguardo fosse frontale oppure no, si è rilevata molto più inefficiente del metodo algoritmico. \\
+\texttt{Equal Error Rate}: 	36.0\%. \\
+La distribuzione degli score è rappresenta nel grafico \Cref{fig:score_distribution_frontal_gaze_l2cs}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/score-distribution-frontal-gaze-l2cs.png}
+    \caption{Distribuzione dei risultati metrica rilevamento del difetto dello sguardo frontale, versione L2CS-NET}
+    \label{fig:score_distribution_frontal_gaze_l2cs}
+\end{figure}
+
+\section{Valutazione su dataset sintetici}
+\subsection{Dataset utilizzati}
+I dataset utilizzati per questa valutazione sono ONOT e TONO, precedentemente introdotti, TONO verrà utilizzato per fornire immagini non compliant sul singolo difetto in atto di valutazione, mentre ONOT fornirà le immagini compliant.
+
+\subsection{Metriche valutate}
+Per quanto riguarda le metriche valutate su TONO e ONOT non è possibile la valutazione del difetto degli occhi rossi, causa l'assenza di immagini riportanti tale difetto nel dataset, verrà quindi riportata la sola valutazione sul difetto del rilevamento dello sguardo frontale.
+
+\subsection{Procedimento di valutazione}
+La valutazione delle metriche sui dataset ONOT e TONO ha seguito i seguenti procedimenti:
+\begin{enumerate}
+    \item \textbf{Filtraggio delle immagine in ONOT}: tramite i file txt forniti insieme dal dataset ONOT sono state conservate le sole immagini aderenti allo standard ICAO
+    \item \textbf{Valutazione delle metriche di TONO}: ogni cartella di TONO e le rimanenti immagini di ONOT sono state valutate dal software OFIQ generando per ogni cartella valutata un file csv, contenente in ogni riga l'immagine valutata e nelle colonne gli score assengati per i vari difetti valutati
+    \item \textbf{Analisi dei risultati}: le valutazioni delle immagini di TONO sono state messe in confronto con quelle di ONOT, le valutazioni di ogni sottocartella di Tono nella metrica relativa al difetto rappresentato sono state messe in relazione (tramite grafici BoxPlot) con i risultati del dataset ONOT nella metrica corrispondente
+    \item \textbf{Visualizzazione dei risultati}: per ogni metrica valutata i risultati sono stati visualizzati tramite i seguenti metodi: \begin{itemize}
+        \item \texttt{BoxPlot}: Uno per i risultati di TONO ed uno per quelli di ONOT, utilizzato per mettere in risalto la differenza della distribuzione degli score di valore. Il Box Plot va letto nel seguente modo: ogni metrica valutata ha due box plot, il primo (da sinistra verso destra) indica gli score di TONO per la metrica valutata, il secondo indica gli score di ONOT, così via per tutte le metriche valutate per il relativo difetto 
+        \item \texttt{Distribuzione degli score}: un istogramma che mette in confronto la distribuzione degli score, in rosso quelli di TONO ed in verde quelli di ONOT
+        \item \texttt{Equal Error Rate}: metrica utilizzata per misurare quanto gli score sono bilanciati tra falsi positivi e falsi negativi
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
+Il software TONO ha 2 cartelle contenti immagini che riportano il difetto dello sguardo frontale: 
+\begin{itemize}
+    \item \textit{la\_1}: Immagini di volti con lo sguardo rivolto verso destra
+    \item \textit{la\_2}: Immagini di volti con lo sguardo rivolto verso sinistra
+\end{itemize}
+I risultati verranno riportati divisi per entrambi le cartelle. \\
+Risultati per la cartella \textit{la\_1} \\
+\texttt{Equal Error Rate}: 	15.8\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_algo} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo} \\
+Risultati per la cartella \textit{la\_2} \\
+\texttt{Equal Error Rate}: 	11.1\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo} \\
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-algo.png}
+    \caption{Distribuzione degli score per la metrica del rilevamento dello sguardo frontale (metodo algoritmico) valutata sui dataset TONO (cartella la\_1) e ONOT}
+    \label{fig:score_distribution_tono_onot_l1_frontal_gaze_algo}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-algo.png}
+    \caption{Box Plot con la metrica del rilevamento dello sguardo frontale (metodo algoritmico) valutata sui dataset TONO (cartella la\_1) e ONOT, metriche valutate (da sinistra verso destra): Unified Quality Score e Frontal Gaze}
+    \label{fig:box_plot_tono_onot_l1_frontal_gaze_algo}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-algo.png}
+    \caption{Distribuzione degli score per la metrica del rilevamento dello sguardo frontale (metodo algoritmico) valutata sui dataset TONO (cartella la\_2) e ONOT}
+    \label{fig:score_distribution_tono_onot_l2_frontal_gaze_algo}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-algo.png}
+    \caption{Box Plot con la metrica del rilevamento dello sguardo frontale (metodo algoritmico) valutata sui dataset TONO (cartella la\_2) e ONOT, metriche valutate (da sinistra verso destra): Unified Quality Score e Frontal Gaze}
+    \label{fig:box_plot_tono_onot_l2_frontal_gaze_algo}
+\end{figure}
+
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
+Come introdotto precedentemente, i risultati verranno riportati sia per la cartella \textit{la\_1} che per la cartella \textit{la\_2}
+Risultati per la cartella \textit{la\_1} \\
+\texttt{Equal Error Rate}: 	0.6\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs} \\
+Risultati per la cartella \textit{la\_2} \\
+\texttt{Equal Error Rate}: 	3.1\%. \\
+Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs} \\
+Box Plot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs} \\
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-l2cs.png}
+    \caption{Distribuzione degli score per la metrica del rilevamento dello sguardo frontale (metodo L2CS-Net) valutata sui dataset TONO (cartella la\_1) e ONOT}
+    \label{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-l2cs.png}
+    \caption{Box Plot con la metrica del rilevamento dello sguardo frontale (metodo L2CS-Net) valutata sui dataset TONO (cartella la\_1) e ONOT, metriche valutate (da sinistra verso destra): Unified Quality Score e Frontal Gaze}
+    \label{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-l2cs.png}
+    \caption{Distribuzione degli score per la metrica del rilevamento dello sguardo frontale (metodo L2CS-Net) valutata sui dataset TONO (cartella la\_2) e ONOT}
+    \label{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-l2cs.png}
+    \caption{Box Plot con la metrica del rilevamento dello sguardo frontale (metodo L2CS-Net) valutata sui dataset TONO (cartella la\_2) e ONOT, metriche valutate (da sinistra verso destra): Unified Quality Score e Frontal Gaze}
+    \label{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}
+\end{figure}
+
 
 \chapter{Contribution}
 

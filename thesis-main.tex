@@ -358,7 +358,7 @@ Sono inoltre stati seguiti i seguenti passagi per eseguire il training della ret
     \item Eseguire l'addestramento della rete sul dataset
 \end{itemize}
 \subsection{Fine-Tuning di MobileNet V2 versione 1}
-\label{chap:fine_tuning_version_1}
+\label{chap:mobilenetv2_ft_v1}
 Nella versione 1 del modello di Fine-Tuning di MobileNet V2, il modello è stato addestrato utilizzando le immagini del dataset ``Gaze Direction Detection''. \\
 Il modello sul test set riporta un'accuracy del 74.0\%. \\
 La matrice di confusione riportata è la seguente: \Cref{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}. \\
@@ -379,7 +379,8 @@ Per riuscire integrare il modello all'interno di OFIQ è stato necessario esport
 \end{figure}
 
 \subsection{Fine-Tuning di MobileNetV2 versione 2}
-Dato che il modello precedentemente introdotto \ref{chap:fine_tuning_version_1} portava buoni score sul test set ma mostrava problemi in fase di generalizzazione una volta sottoposti al modello immagini relative ad ulteriori dataset, nella versione 2 del modello si è intervenuti sulla capacità di generalizzazione del dataset in particolare cercando di far valutare al modello il solo occhio dalle immagini del dataset iniziali.
+\label{chap:mobilenetv2_ft_v2}
+Dato che il modello precedentemente introdotto \ref{chap:mobilenetv2_ft_v1} portava buoni score sul test set ma mostrava problemi in fase di generalizzazione una volta sottoposti al modello immagini relative ad ulteriori dataset, nella versione 2 del modello si è intervenuti sulla capacità di generalizzazione del dataset in particolare cercando di far valutare al modello il solo occhio dalle immagini del dataset iniziali.
 E' stata quindi definita il seguente preprocessing per tutte le immagini del dataset: \begin{itemize}
     \item utilizzo del classificatore HaarCascade di OpenCV per identificare la posizione degli occhi nelle immagini del dataset
     \item Il classificatore restituisce il bounding box dell'occhio che viene ritagliato dall'immagine originale
@@ -398,6 +399,7 @@ Per riuscire ad utilizzare il modello su OFIQ è stata definita una pipeline di 
 \end{figure}
 
 \section{Costruzione di un modello CNN}
+\label{chap:build_cnn_model}
 Per riuscire a minimizzare l'impatto del rumore presente durante il ridimensionamento delle immagini e di particolari tecniche di preprocessing è stato implementato un modello CNN from scratch con la differenza rispetto a MobileNetV2 di accettare immagini di dimensione ridotta: \(96 \cdot 96\).
 La struttura del modello è descritta nell'immagine \Cref{fig:custom_CNN_architecture}.
 Contiene 4 strati in cui si alternano Layer di convoluzioni e layer di max pooling che dimezzano la dimensione dei batch fino ad arrivare al layer finale con una dimensione \(6 \cdot 6 \cdot 256\). La parte finale è una rete fully connected con 512 nodi ed un layer di Dropout per favorire l'addestramento, fino all'ultimo layer con le 2 classi finali e la ``softmax'' come funzione di attivazione.
@@ -826,7 +828,7 @@ Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaz
 BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}. \\
 
 \noindent Risultati per la cartella \textit{la\_2}: \\
-\texttt{Equal Error Rate}: 29.7\%. \\
+\texttt{Equal Error Rate}: 18.6\%. \\
 Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}. \\
 BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}. 
 
@@ -862,7 +864,88 @@ BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}.
     \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo L2CS-Net)}
 \end{figure}
 
-\subsection{Valutazioni dei modelli ...}
+\subsection{Valutazioni dei modelli di machine learning sviluppati}
+Sono riportati di seguito Equal Error Rate e distribuzione degli score su TONO e ONOT dei modelli ottenuti tramite Fine Tuning di Mobile Net V2. \\
+Versione 1: Fine tune di Mobile Net V2 sul dataset ``Gaze Direction Detection'' versione 1 (\ref{chap:mobilenetv2_ft_v1}) \\
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 47.3\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la1}
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 58.5\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la2} \\
+\\
+Versione 2: Fine tune di MObile Net V2 sul dataset ``Gaze Direction Detection'' versione 2 (\ref{chap:mobilenetv2_ft_v2}) \\
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 46.9\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la1}
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 58.0\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la2} \\
+\\
+Versione 3: Modello CNN allenato sul dataset ``Gaze Direction Detection'' (\ref{chap:build_cnn_model}) \\
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 38.4\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la1}
+Dataset \texttt{la\_1} di Tono: \\
+Equal Error Rate: 21.8\% \\
+Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la2} \\
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la1.png}
+        \caption{Comparazione con cartella la\_1 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v1_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la2.png}
+        \caption{Comparazione con cartella la\_2 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v1_la2}
+    \end{subfigure}
+
+    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo Fine Tuning Mobile Net v2, versione 1) su TONO e ONOT}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la1.png}
+        \caption{Comparazione con cartella la\_1 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v2_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la2.png}
+        \caption{Comparazione con cartella la\_2 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v2_la2}
+    \end{subfigure}
+
+    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo Fine Tuning Mobile Net v2, versione 2) su TONO e ONOT}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la1.png}
+        \caption{Comparazione con cartella la\_1 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v3_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la2.png}
+        \caption{Comparazione con cartella la\_2 di Tono}
+        \label{fig:score_distribution_frontal_gaze_gdd_v3_la2}
+    \end{subfigure}
+
+    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo modello CNN) su TONO e ONOT}
+\end{figure}
 
 \chapter{Analisi dei risultati}
 \section{Rilevamento del difetto degli occhi rossi}
@@ -886,7 +969,63 @@ Nella metrica del rilevamento degli occhi rossi si è riscontrato un miglioramen
 
 \section{Rilevamento del difetto dello sguardo frontale}
 \subsection{Versione algoritmica}
+Nella metrica del rilevamento dello sguardo frontale il metodo algoritmico basato sulla posizione dei landmark è quello che tra tutti i metodi in questa metrica ha rilevato gli score migliori dimostrando la difficolta per una modello di machine basato su CNN o su reti neurali nel riuscire a predire la direzione dello sguardo partendo dal volto dell'utente. Nonstante gli ottimi score realizzati si possono notare prestazioni migliori di questo algoritmi su immagini generate artificialmente presentanti nessun altro difetto specifico, i casi di TONO e ONOT, e prestazioni inferiori su immagini reali con potenzialmente altri difetti, come nel caso di FVC-Ongoing. Le debolezze di questo metodo includono immagini di volti nei quali i rapporti tra le distanze di punti specifi dell'occhio non sempre sono proporzionate (es. immagine classificata falsa negativi \Cref{fig:frontal_gaze_algo_weakness_3}, immagine classificata falsa negativa \Cref{fig:frontal_gaze_algo_weakness_1}, immagine classificata falsa positiva \Cref{fig:frontal_gaze_algo_weakness_4}), la dipendenza dell'algoritmo rispetto all'errore del modello che genera i landmark il quale in casi in cui sono presenti riflessi vicino o sopra gli occhi tende a trovare landmark distanti di qualche pixel rispetto a dove dovrebbero essere portando ad eventuali score minori e le immagini le quali riportano altri difetti quali una posa non frontale del viso (es. falso negativo \Cref{fig:frontal_gaze_algo_weakness_2})
 
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-94-1.png}
+        \caption{Falso negativa, score: 94}
+        \label{fig:frontal_gaze_algo_weakness_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-80-2.png}
+        \caption{Falso negativa, score: 80}
+        \label{fig:frontal_gaze_algo_weakness_2}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-0-3.png}
+        \caption{Falso negativa, score: 0}
+        \label{fig:frontal_gaze_algo_weakness_3}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-positive-98-1.png}
+        \caption{Falso positiva, score: 98}
+        \label{fig:frontal_gaze_algo_weakness_4}
+    \end{subfigure}
+    \label{fig:frontal_gaze_algo_weakness}
+    \caption{Esempi di immagini false positivi e fale negativi nella metrica del rilevamento dello sguardo frontale con metodo algoritmico}
+\end{figure}
+
+\subsection{Versione con l'utilizzo del modello L2CS-Net}
+Il modello L2CS Net non riesce sempre a distinguere uno sguardo rivolto verso la camera ed uno leggermente laterale, le motivazione che possono portare ad un equal error rate sempre superiore al 18\% potrebbero essere diverse. Una possibile causa è data dalla pipeline di preprocessing per la quale il modello l2cs si aspetta in input l'immagine di un volto rilevato dal modello \textit{RetinaFace} disponibile all'interno della libreria python ``face\_detection'', mentre per poter valutare il modello in OFIQ è stato utilizzato un altro modello di face detecting già presente in formato onnx all'interno di OFIQ.
+In particolare nell'immagine \Cref{fig:frontal_gaze_l2cs_false_negative} l2cs-net, analizzando l'angolo yaw, usando \textit{RetinaFace} viene calcolato \texttt{0.03} radianti, mentre usando il modello all'interno di OFIQ viene calcolato \texttt{0.27} radianti, nonostante ciò, questo è un caso isolato, in quanto generalmente la differenza di predizione degli angoli nella media delle immagini è raramente superiore a \texttt{0.03} radianti.
+Un ulteriore causa potrebbe essere data dal dataset di addestramento, come possibile visualizzare sulla repository git il modello non è stato addestrato solamente su volti frontali, bensi su volti posti in diverse angolazioni e distanze, il che potrebbe aver inciso sulle prestazioni del modello in volti con il viso rivolto verso la camera, inoltre anche la qualità e il rumore presente all'interno delle immagini con cui è stato addestrato potrebbe aver inciso.
+Come possibile visualizzare nelle immagini \Cref{fig:frontal_gaze_l2cs_weakness}, nonostante ad occhio nudo sia chiaro che l'immagine \Cref{fig:frontal_gaze_l2cs_false_positive} stia guardando lateralmente e che l'immagine \Cref{fig:frontal_gaze_l2cs_false_negative} non lo stia facendo, L2CS-Net prevede un angolo pitch maggiore nella seconda immagine rispetto alla prima, questo risultato è verificabile sia usando \textit{RetinaFace} come face detector sia il face detector utilizzato nell'implementazione in OFIQ.
+
+\begin{figure}[htbp]
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-positive-97-1.png}
+        \caption{Falso negativa, angolo pitch calcolato: 0.02}
+        \label{fig:frontal_gaze_l2cs_false_positive}
+    \end{subfigure}
+    \hfill
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-negative-65-1.png}
+        \caption{Falso negativa, angolo pitch calcolato: 0.05}
+        \label{fig:frontal_gaze_l2cs_false_negative}
+    \end{subfigure}
+    \label{fig:frontal_gaze_l2cs_weakness}
+    \caption{Esempi di immagini false positivi e fale negativi nella metrica del rilevamento dello sguardo frontale con metodo L2CS-Net}
+\end{figure}
 
 \chapter{Contribution}
 

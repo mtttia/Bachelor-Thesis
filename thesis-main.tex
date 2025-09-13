@@ -33,7 +33,7 @@
 \begin{abstract}	
 La visione artificiale sta venendo sempre più utilizzata nel riconoscimento di un soggetto tramite immagini facciali, ambito in cui si stanno diffondendo sistemi di riconoscimento biometrico automatico.
 In questi contesti, è fondamentale garantire un'acquisizione controllata e standardizzata delle immagini facciali, al fine di ridurre errori di riconoscimento e vulnerabilità a minacce come il face morphing.
-Una cattiva acquisizione può compromettere l’intero processo biometrico, esponendo il sistema a minacce quali la falsificazioni e riducendone l’affidabilità.
+Una cattiva acquisizione può compromettere l'intero processo biometrico, esponendo il sistema a minacce quali la falsificazioni e riducendone l'affidabilità.
 Questo progetto contribuisce allo sviluppo ed alla valutazione di un software che ha l'obbiettivo di implementare un draft ISO, volto a valutare la qualità dell'acquisizione delle immagini facciali secondo diverse metriche.
 \end{abstract}
 
@@ -54,24 +54,24 @@ Questo progetto contribuisce allo sviluppo ed alla valutazione di un software ch
 \label{chap:introduzione}
 %----------------------------------------------------------------------------------------
 \section{Motivazioni}
-Nell’ambito della visione artificiale, e in particolare del riconoscimento facciale, si è ottenuta negli ultimi anni a una significativa riduzione dei tassi di errore grazie all’introduzione di algoritmi basati su tecniche di deep learning.
-Tuttavia, gli errori di riconoscimento rimangono ancora rilevanti e possono essere influenzati da numerosi fattori, tra cui le modalità di acquisizione dell’immagine, la cooperazione del soggetto durante la cattura biometrica, la specifica implementazione dell’algoritmo di confronto e la logica decisionale associata.
-In questo contesto, risulta evidente la necessità di un ammodernamento delle procedure di acquisizione, per evitare un peggioramento delle prestazioni dei sistemi biometrici a fronte dell’incremento dei volumi di dati da elaborare.
-L’urgenza di intervenire su questi aspetti si collega anche a una maggiore consapevolezza dell’importanza dell’usabilità dei sistemi biometrici, sia per gli utenti finali sia per gli operatori umani, i quali possono contribuire in modo significativo alla riduzione degli errori attraverso una migliore qualità nella fase di acquisizione.
-Spesso, infatti, un sistema progettato esclusivamente sulla base della tecnologia rischia di mostrare i propri limiti se non considera in modo integrato le dinamiche dell’interazione umana.
-Parallelamente, l’adozione crescente del riconoscimento facciale in contesti di ampia scala, come la gestione dei documenti di identità elettronici, le applicazioni commerciali e le attività di controllo delle forze dell’ordine, ha comportato la raccolta massiva di immagini del volto, che fungono sia da campioni di riferimento in fase di registrazione sia da elementi di confronto successivo.
-Programmi di portata nazionale e internazionale, come quelli attivati in Cina, nell’Unione Europea, negli Stati Uniti e in India, testimoniano il crescente impiego di questa tecnologia in settori critici quali i trasporti, l’immigrazione e la verifica dell’identità.
+Nell'ambito della visione artificiale, e in particolare del riconoscimento facciale, si è ottenuta negli ultimi anni a una significativa riduzione dei tassi di errore grazie all'introduzione di algoritmi basati su tecniche di deep learning.
+Tuttavia, gli errori di riconoscimento rimangono ancora rilevanti e possono essere influenzati da numerosi fattori, tra cui le modalità di acquisizione dell'immagine, la cooperazione del soggetto durante la cattura biometrica, la specifica implementazione dell'algoritmo di confronto e la logica decisionale associata.
+In questo contesto, risulta evidente la necessità di un ammodernamento delle procedure di acquisizione, per evitare un peggioramento delle prestazioni dei sistemi biometrici a fronte dell'incremento dei volumi di dati da elaborare.
+L'urgenza di intervenire su questi aspetti si collega anche a una maggiore consapevolezza dell'importanza dell'usabilità dei sistemi biometrici, sia per gli utenti finali sia per gli operatori umani, i quali possono contribuire in modo significativo alla riduzione degli errori attraverso una migliore qualità nella fase di acquisizione.
+Spesso, infatti, un sistema progettato esclusivamente sulla base della tecnologia rischia di mostrare i propri limiti se non considera in modo integrato le dinamiche dell'interazione umana.
+Parallelamente, l'adozione crescente del riconoscimento facciale in contesti di ampia scala, come la gestione dei documenti di identità elettronici, le applicazioni commerciali e le attività di controllo delle forze dell'ordine, ha comportato la raccolta massiva di immagini del volto, che fungono sia da campioni di riferimento in fase di registrazione sia da elementi di confronto successivo.
+Programmi di portata nazionale e internazionale, come quelli attivati in Cina, nell'Unione Europea, negli Stati Uniti e in India, testimoniano il crescente impiego di questa tecnologia in settori critici quali i trasporti, l'immigrazione e la verifica dell'identità.
 Tuttavia, molte delle immagini facciali oggi raccolte provengono da dispositivi di acquisizione non specificamente progettati per l'acquisizione di immagini del volto.
-Le immagini destinate a documenti d’identità o a database ufficiali vengono per lo più acquisite con telecamere configurate secondo specifiche documentarie, come lo standard ISO/IEC 39794-5, che ne disciplina l’inquadratura e le caratteristiche fotografiche.
+Le immagini destinate a documenti d'identità o a database ufficiali vengono per lo più acquisite con telecamere configurate secondo specifiche documentarie, come lo standard ISO/IEC 39794-5, che ne disciplina l'inquadratura e le caratteristiche fotografiche.
 In assenza di strumenti automatici di valutazione della qualità, la verifica della conformità ai requisiti previsti dagli standard vigenti viene spesso affidata al fotografo.
-A questo si aggiunge il problema rappresentato da comportamenti involontari dei soggetti durante la cattura, portando ad una  variazioni tra l’immagine di riferimento e quella di confronto, compromettendo l’efficacia del riconoscimento.
+A questo si aggiunge il problema rappresentato da comportamenti involontari dei soggetti durante la cattura, portando ad una  variazioni tra l'immagine di riferimento e quella di confronto, compromettendo l'efficacia del riconoscimento.
 È pertanto essenziale garantire la coerenza con la presentazione canonica prevista dagli standard, ossia un volto centrato e frontale, con espressione neutra, occhi aperti e privo di montature di occhiali che coprano gli occhi o troppo spesse.
-Considerando la grande eterogeneità degli utenti, per età, costituzione fisica, etnia, lingua, cultura, alfabetizzazione e familiarità con la tecnologia, è evidente l'importanza di un’attenta progettazione dal punto di vista dei fattori umani per migliorare l'acquisizione delle immagini facciali.
-Un’ulteriore criticità risiede nella separazione tra il processo di acquisizione dell’immagine e quello di valutazione della qualità, che spesso avviene solo in un secondo momento, quando la fotografia viene inviata a un server remoto.
-Se la qualità dell’immagine risulta inadeguata, si rende necessaria una nuova acquisizione aggravando tempi e costi.
-In questo scenario, il lavoro descritto da questa tesi si colloca nell’ambito della valutazione della qualità delle immagini del volto (ISO 29794-5), nell'ambito della specifica applicazione legata ai documenti di identità elettronici (ISO 39794-5).
+Considerando la grande eterogeneità degli utenti, per età, costituzione fisica, etnia, lingua, cultura, alfabetizzazione e familiarità con la tecnologia, è evidente l'importanza di un'attenta progettazione dal punto di vista dei fattori umani per migliorare l'acquisizione delle immagini facciali.
+Un'ulteriore criticità risiede nella separazione tra il processo di acquisizione dell'immagine e quello di valutazione della qualità, che spesso avviene solo in un secondo momento, quando la fotografia viene inviata a un server remoto.
+Se la qualità dell'immagine risulta inadeguata, si rende necessaria una nuova acquisizione aggravando tempi e costi.
+In questo scenario, il lavoro descritto da questa tesi si colloca nell'ambito della valutazione della qualità delle immagini del volto (ISO 29794-5), nell'ambito della specifica applicazione legata ai documenti di identità elettronici (ISO 39794-5).
 \section{Obbiettivo}
-Il progetto consiste in una valutazione del software OFIQ (Open Source Face Image Quality), strumento open source sviluppato per implementare le metriche descritte nel draft dello standard ISO precedentemente illustrato. Il lavoro consiste inoltre nella contribuzione allo sviluppo del software mediante l’implementazione di ulteriori metriche tra cui alcune suggerite dallo standard, ma non ancora integrate nel software. L’obiettivo principale è quello di verificare l’affidabilità di OFIQ per il controllo di qualità delle immagini facciali destinate all’identificazione biometrica, testandolo su esempi conformi alle specifiche e su esempi non conformi. Si vuole valutare se l’impiego del software durante la fase di acquisizione possa rappresentare uno strumento accurato per garantire la qualità e la conformità delle immagini biometriche.  
+Il progetto consiste in una valutazione del software OFIQ (Open Source Face Image Quality), strumento open source sviluppato per implementare le metriche descritte nel draft dello standard ISO precedentemente illustrato. Il lavoro consiste inoltre nella contribuzione allo sviluppo del software mediante l'implementazione di ulteriori metriche tra cui alcune suggerite dallo standard, ma non ancora integrate nel software. L'obiettivo principale è quello di verificare l'affidabilità di OFIQ per il controllo di qualità delle immagini facciali destinate all'identificazione biometrica, testandolo su esempi conformi alle specifiche e su esempi non conformi. Si vuole valutare se l'impiego del software durante la fase di acquisizione possa rappresentare uno strumento accurato per garantire la qualità e la conformità delle immagini biometriche.  
 
 \section{Metodo}
 Per la realizzazione di questo progetto si è partiti con la comprensione delle varie metriche descritte nel draft ISO 29794-5:2024.
@@ -98,7 +98,7 @@ Dato che questo difetto noto altera il colore originale delle pupille è importa
 L'implementazione di questa metrica permette di dare un riscontro sotto forma di valutazione normalizzata da 0 a 100 sulla correttezza della foto rispetto a questo difetto.
 
 \section{Requisiti preliminari}
-I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} allenata sul Wild dataset, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
+I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} \cite{9093431}, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
 \begin{figure}
     \centering
     \includegraphics[width=.6\linewidth]{figures/landmark-face.png}
@@ -206,7 +206,7 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
 \label{chap:frontal_gaze_algo}
 
 \section{Obbiettivo della metrica}
-L’obiettivo della metrica è quello di assegnare uno score da 0 a 100 sul grado in cui un soggetto guarda in camera misura necessaria per garantire l’idoneità delle foto nei documenti di identità. Guardare dritto in camera è un requisito fondamentale per il riconoscimento facciale e per la conformità agli standard internazionali. 
+L'obiettivo della metrica è quello di assegnare uno score da 0 a 100 sul grado in cui un soggetto guarda in camera, misura necessaria per garantire l'idoneità delle foto nei documenti di identità. Guardare dritto in camera è un requisito fondamentale per il riconoscimento facciale e per la conformità agli standard internazionali. 
 
 \section{Requisiti preliminari}
 I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} allenata sul Wild dataset, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
@@ -274,28 +274,31 @@ Una visione grafica dei rapporti sopra elencati è disponibile
 \end{enumerate}
 
 \chapter{Rilevamento dello sguardo frontale tramite CNN}
-\section{Selta del modello}
-Dopo un'attenta analisi sui modelli stato dell'arte nel task del rilevamento dello sguardo si è trovato come riferimento l'implementazione della rete neurale descritta all'interno del paper \cite[L2CS-NET: FINE-GRAINED GAZE ESTIMATION IN UNCONSTRAINED ENVIRONMENTS]{10372944}.
-Il modello descritto in questo paper si propone di prevedere lo sguardo in ambienti non vincolati, dando una stima degli angoli Pitch e Yaw del volto in radianti.
+
+\section{Scelta del modello}
+Dopo un'analisi dei modelli di riferimento nello stato dell'arte per il rilevamento dello sguardo, è stata individuata come base l'implementazione della rete neurale descritta nel paper \cite[L2CS-NET: Fine-Grained Gaze Estimation in Unconstrained Environments]{10372944}.  
+Il modello proposto in questo lavoro ha l'obiettivo di stimare lo sguardo in contesti non vincolati, fornendo la previsione degli angoli \textit{Pitch} e \textit{Yaw} del volto, espressi in radianti.
 
 \section{Utilizzo del modello}
-Il modello L2CS-NET viene distribuito sotto forma di pacchetto Python.
-Il pacchetto espone un API tramite la quale è possibile far processare un'immagine ed ottenere per ogni volto dell'immagine gli angoli Pitch e Yaw.
-Il modello L2CS-NET è costruito mediante il framework Pytorch ed è quindi un modello Pytorch, per poter utilizzare il modello all'interno del software OFIQ è necessario covnertire il modello al formato Onnx, un formato open utilizzato per rappresentare i modelli di machine learning.
-Il formato Onnx permettere di eseguire il modello all'interno del software OFIQ in C++ tramite la libreria OnnxRuntime disponibile in C++.
-Inoltre il pacchetto Python di L2CS-NET esegue il preprocessa dell'immagine tramite una pipeline che effettua i sueguenti step: \begin{itemize}
-    \item Utilizza il modello RetinaFace (dalla libreria face detection) per trovare il bounding box dei vari volti all'interno dell'immagine
-    \item Per ogni volto viene presa in considerazione solamente la parte dell'immagine compresa all'interno della bounding box (regione di interesse)
-    \item Per ogni regione di interesse viene convertito lo spazio colori da BGR a RGB
-    \item Ogni regione di interesse viene ridimensionato in un'immagine (224 * 224)
-    \item Ogni regione di interesse viene passata al modello ResNet-50 seguito da 2 layer fully-connected che ritornano in output 90 classi rappresentanti intervalli discreti (sia per pitch che per yaw) con all'interno un valore rappresentante la probabilità che lo sguardo per il relativo angolo si trovi in quell'intervallo
-    \item Per ogni valore ritornato da ResNet-50 viene applicata la funzione Softmax di modo da avere la probabilità in percentuale che lo sguardo si trovi all'interno di quell'intervallo
-    \item Vengono moltiplicate le probabilità che lo sguardo si trovi in quell'intervallo per l'indice della probabilità nel vettore dei tensori
-    \item Viene fatta la somma dei valori ottenuti precedentemente
-    \item La somma viene moltiplicata per quattro ed il risultato sottratto di 180, in modo da convertire ogni probabilità ottenuta gradi.
-    \item Viene eseguita la conversione da gradi a radianti
+Il modello L2CS-Net è distribuito sotto forma di pacchetto Python che espone un'API attraverso la quale è possibile processare un'immagine ed ottenere, per ciascun volto rilevato, i valori degli angoli \textit{Pitch} e \textit{Yaw}.  
+Il modello è stato implementato in PyTorch e, per poter essere integrato nel software OFIQ, è stato necessario convertirlo nel formato \texttt{ONNX}, uno standard open-source per la rappresentazione di modelli di machine learning. Tale formato consente l'esecuzione in C++ tramite la libreria \texttt{ONNX Runtime}, già disponibile all'interno del software.  
+
+Il pacchetto Python originale di L2CS-Net include inoltre una pipeline di preprocessing che segue i seguenti passaggi:  
+\begin{itemize}
+    \item Utilizzo del modello RetinaFace (fornito dalla libreria \texttt{face\_detection}) per individuare le bounding box dei volti presenti nell'immagine.
+    \item Estrazione della regione di interesse corrispondente a ciascuna bounding box
+    \item Conversione dello spazio colore da BGR a RGB.
+    \item Ridimensionamento di ciascuna regione di interesse a $224 \times 224$ pixel.
+    \item Elaborazione delle immagini tramite ResNet-50, seguita da due layer fully-connected che producono in output 90 classi rappresentanti intervalli discreti sia per \textit{Pitch} che per \textit{Yaw}, ognuna associata a una probabilità.
+    \item Applicazione della funzione Softmax per ottenere la distribuzione di probabilità normalizzata sugli intervalli.
+    \item Calcolo del valore atteso dell'angolo come somma pesata delle probabilità per ciascun intervallo.
+    \item Conversione del risultato da classi discrete a gradi, mediante moltiplicazione per quattro e successiva sottrazione di 180.
+    \item Trasformazione finale da gradi a radianti.
 \end{itemize}
-I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'interno del software OFIQ tramite la libreria open cv per cpp, mentre per trovare il bounding box del volto all'interno dell'immagine viene utilizzato il modello "SSD Face Detector CNN" che riporta risultati molto simili a quelli di RetinaFace, la scelta di utilizzare questo modello è dettata dal fatto di averlo già a disposizione all'interno del software in formato Onnx.
+
+Le operazioni di preprocessing basate su OpenCV possono essere facilmente replicate all'interno di OFIQ tramite la libreria \texttt{OpenCV} per C++.  
+Per la rilevazione della bounding box facciale, invece, è stato utilizzato il modello \textit{SSD Face Detector CNN}, già integrato in OFIQ in formato \texttt{ONNX}. Questo modello fornisce risultati comparabili a quelli di RetinaFace.
+
 
 \section{Implementazione della metrica}
 
@@ -366,7 +369,7 @@ Il dataset contiene circa 53000 coppie di occhi ed è rilasciato sotto forma di 
 Ogni immagine ha dimensioni \(64 \times 64\) e raffigura un occhio con una piccola porzione del volto, comprendendo, a volte, anche parte del naso.  
 Il dataset è stato suddiviso in training set (40000 immagini) e test set (4000 immagini), bilanciati in termini di immagini con sguardo in camera e non.  
 
-Il Fine-Tuning è stato eseguito sul modello MobileNetV2, la cui architettura è descritta in \cite{Sandler2018MobileNetV2IR}. Il layer di output è stato sostituito con un layer denso (\texttt{Dense}) di 2 nodi con funzione di attivazione \texttt{softmax}. L'addestramento è stato condotto con l’ottimizzatore \texttt{Adam} e come funzione di loss \texttt{categorical\_crossentropy}.  
+Il Fine-Tuning è stato eseguito sul modello MobileNetV2, la cui architettura è descritta in \cite{Sandler2018MobileNetV2IR}. Il layer di output è stato sostituito con un layer denso (\texttt{Dense}) di 2 nodi con funzione di attivazione \texttt{softmax}. L'addestramento è stato condotto con l'ottimizzatore \texttt{Adam} e come funzione di loss \texttt{categorical\_crossentropy}.  
 
 Sono inoltre stati adottati i seguenti accorgimenti:
 \begin{itemize}
@@ -654,7 +657,7 @@ In questo lavoro, XGBoost è stato impiegato per costruire due dei modelli basat
 
 
 \section{Jupyter Notebook, Numpy e Matplotlib}
-Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab.
+Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab (un dataset con immagini di volti reali etichettati).
 Il linguaggio Python è stato inoltre impiegato per:
 \begin{itemize}
     \item suddividere i dataset in base ai file di riferimento in formato \texttt{.txt};
@@ -757,7 +760,7 @@ Dopo un'attenta analisi del protocollo richiesto dalla piattaforma FVC-Ongoing, 
 
 \subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione HSV)}
 La valutazione della metrica per il difetto degli occhi rossi è divisa in due parti. 
-Nella prima parte vengono analizzati i risultati ottenuti tramite l'algoritmo basato sullo spazio colore HSV, mentre nella seconda parte si utilizza lo spazio colore yCbCr. \\[4pt]
+Nella prima parte vengono analizzati i risultati ottenuti tramite l'algoritmo basato sullo spazio colore HSV, mentre nella seconda parte si utilizza lo spazio colore yCbCr. \\
 \texttt{Equal Error Rate}: 18.1\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_hsv}. 
 
@@ -769,7 +772,7 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione yCbCr)}
-La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\[4pt]
+La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\
 \texttt{Equal Error Rate} (versione con esclusione della pupilla dal calcolo dei pixel dell'iride): 17.1\%. \\
 \texttt{Equal Error Rate} (versione senza esclusione della pupilla dal calcolo dei pixel dell'iride): 14.6\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr} (questa distribuzione è relativa alla versione senza l'esclusione della pupilla dal calcolo dei pixel dell'iride).
@@ -782,7 +785,7 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
-I risultati ottenuti tramite il metodo algoritmico rientrano nella media degli algoritmi pubblicati sulla piattaforma. \\[4pt]
+I risultati ottenuti tramite il metodo algoritmico rientrano nella media degli algoritmi pubblicati sulla piattaforma. \\
 \texttt{Equal Error Rate}: 17.1\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_algo}.
 
@@ -794,7 +797,6 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
-L'utilizzo della CNN L2CS-Net, in grado di predire l'angolatura dello sguardo, si è rivelato meno efficace del metodo algoritmico. \\[4pt]
 \texttt{Equal Error Rate}: 12.9\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_l2cs}.
 

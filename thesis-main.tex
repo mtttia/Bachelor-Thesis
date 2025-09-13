@@ -147,7 +147,7 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
     \item Creazione maschera iride [Fig. iris mask] \begin{itemize}
         \item Crea maschera nera delle dimensioni della ROI
         \item Disegna cerchio bianco con raggio iride centrato sulla pupilla
-        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale
+        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale (la versione HSV è stata valutata sia con che senza questo passaggio)
     \end{itemize}
     \item Combinazione maschere [Fig. combined mask] \begin{itemize}
         \item Combina maschera occhio e maschera iride con operazione AND
@@ -723,8 +723,9 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 
 \subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione yCbCr)}
 La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\[4pt]
-\texttt{Equal Error Rate}: 14.6\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr}.
+\texttt{Equal Error Rate} (versione con esclusione della pupilla dal calcolo dei pixel dell'iride): 17.1\%. \\
+\texttt{Equal Error Rate} (versione senza esclusione della pupilla dal calcolo dei pixel dell'iride): 14.6\%. \\
+La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr} (questa distribuzione è relativa alla versione senza l'esclusione della pupilla dal calcolo dei pixel dell'iride).
 
 \begin{figure}
     \centering
@@ -965,7 +966,7 @@ Nono sono riportate le metriche su Tono e Onot riscontrate nei modelli basati su
 
 \chapter{Analisi dei risultati}
 \section{Rilevamento del difetto degli occhi rossi}
-Nella metrica del rilevamento degli occhi rossi si è riscontrato un miglioramento delle performance nella versione che prevede l'utilizzo dello spazio colore YCBCR rispetto a quella con l'utilizzo dello spazio colore HSV, questo è dato dal fatto che il canale CR assume valori molto alti in presenza del colore rosso favorendone l'isolamento, inoltre l'informazione di luminanza è separata rispetto agli altri componenti rendendo il filtro più robusto a variazioni di luce/ombra. Un fattore che può aver inciso sull'equal error rate al 14\% può essere la sottomissiona all'algoritmo di immagini riportanti diversi difetti oltre a quello degli occhi rossi, come dimostrato dalle immagini \Cref{fig:red_eye_false_negative_images} che riportano score al 51 e 66 per colpa dell'errata saturazione dell'immagine, difetto riscontrabile da altre metiche implementate nel software OFIQ.
+Nella metrica del rilevamento degli occhi rossi si è riscontrato un miglioramento delle performance nella versione che prevede l'utilizzo dello spazio colore YCBCR rispetto a quella con l'utilizzo dello spazio colore HSV, questo è dato dal fatto che il canale CR assume valori molto alti in presenza del colore rosso favorendone l'isolamento, inoltre l'informazione di luminanza è separata rispetto agli altri componenti rendendo il filtro più robusto a variazioni di luce/ombra. Si è inoltre analizzato che la non esclusione dei pixel della pupilla dal calcolo dei pixel totali dell'iride ha portato un ulteriore miglioramento delle performance, questo dovuto probabilmente dal fatto che il landmark non fosse correttamente centrato nella pupilla in alcuni casi portando ad escludere pixel utili alla conta dei pixel rossi totali. Un fattore che può aver inciso sull'equal error rate al 14\% può essere la sottomissione all'algoritmo di immagini riportanti difetti diversi da quello degli occhi rossi in immagini classficate con assenza di occhi rossi, come dimostrato dalle immagini \Cref{fig:red_eye_false_negative_images} che riportano score al 51 e 66 per colpa dell'errata saturazione dell'immagine, difetto riscontrabile da altre metiche implementate nel software OFIQ.
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.49\textwidth}

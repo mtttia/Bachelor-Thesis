@@ -196,6 +196,7 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
 \end{figure}
 
 \chapter{Implementazione della metrica per il rilevamento dello sguardo frontale}
+\label{chap:frontal_gaze_algo}
 
 \section{Obbiettivo della metrica}
 L’obiettivo della metrica è quello di assegnare uno score da 0 a 100 sul grado in cui un soggetto guarda in camera misura necessaria per garantire l’idoneità delle foto nei documenti di identità. Guardare dritto in camera è un requisito fondamentale per il riconoscimento facciale e per la conformità agli standard internazionali. 
@@ -1116,14 +1117,18 @@ Dai test condotti si può notare che:
 
 
 \chapter{Conclusioni}
+Le valutazioni condotte sul software OFIQ e la relativa analisi dei risultati hanno mostrato come le metriche implementate al suo interno siano solide, i parametri valutati in OFIQ e nel draft ISO 29794-5 non sono gli stessi valutati nello standard ICAO, ma nelle metriche comuni il software valutato sia Tono e Onot che su FVC Ongoing ottiene buoni score e buoni equal error rate sempre inferiori al 10\%.
+Questa tesi ha voluto dare implementazione a due metriche non implementate all'interno di OFIQ, quella della rilevazione del difetto degli occhi rossi e quella del rilevamento dello sguardo frontale. Per quanto riguarda la metrica del rilevamento degli occhi rossi, questa ricerca oltre ad aver dato un metodo algoritmico per la rilevazione del difetto, ha anche mostrato come lo spazio colori yCbCr riesca a trovare e ad ottimizzare il filtro sul colore rosso rispetto allo spazio colore HSV.
+Per quanto riguartda invece la metrica dello sguardo frontale, lei era presente nel draft ISO come metrica non attualmente implementabile o testabile quindi assente dal corrente standard ma potenzialmente contenuta in edizioni future. Il draft ISO da inoltre un'idea di implementazione della metrica (non implementata nel software), l'attuale metodo algoritmico Chapter~\ref{chap:frontal_gaze_algo}. Il metodo è stato quindi implementato e valutato su FVC Ongoing e sui dataset Tono e Onot. L'obbiettivo successivo è stato quello di cercare metodi alternativi per rilevare questo difetto provando a migliorare il suo score su FVC Ongoing, risultato raggiunto tramite il metodo basato sul modello L2CS-Net. La ricerca non si è fermata a questa soluzione ma ha voluto prototipare ulteriori metodi basati sul machine learning da cui si è riusciti a trarre diverse conclusioni.
+La rete neurale gdd CNN è stata quella con le migliori performance dimostrando quanto l'importanza di adattare il modello al proprio caso d'uso possa fare la differenza, grazie all'input accettato di dimensioni ridotte rispetto ha MobileNetV2 le immagini avevano al loro interno minore rumore portando ad un possibile miglioramento delle prestazioni, questa soluzione ha ottimi spunti futuri partendo dall'utilizzo di un dataset più eterogeneo in modo da poter migliorare le prestazioni del modello nei test cross-dataset, migliorandone la generalizzazione. Inoltre il metodo della costruzione di un modello basato sui landmark riporta nel caso dell'utilizzo di MediaPipe Face Mesh con XGBoost buoni risultati nonstante l'addestramento su un dataset limitato, il suo addestramento su un dataset più eterogeneo può fargli migliorare le performance. Inoltre quest'ultimo test ha messo in mostra come i modelli con i landmark di MediaPipe Face Mesh siano più accurati, questo può essere un ottimo spunto anche per il miglioramento dell'attuale metodo algoritmico proposto nello standard ISO 29794-5.
+
+
 
 %----------------------------------------------------------------------------------------
 % BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
 \backmatter
-
-\nocite{*} % Remove this as soon as you have the first citation
 
 \bibliographystyle{alpha}
 \bibliography{bibliography}

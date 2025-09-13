@@ -629,16 +629,21 @@ I test vengono condotti su diversi dataset e metriche note.
 Il linguaggio di programmazione Python ed il framework PyTorch sono comunemente utilizzati per l'addestramento e la distribuzione di modelli di Machine Learning. 
 Nel progetto il loro impiego riguarda principalmente il testing e la conversione in formato Onnx del modello L2CS-Net, originariamente distribuito in PyTorch.
 In particolare, è stato utilizzato il modulo \texttt{ONNX exporter API}, che consente di esportare un modello PyTorch in formato Onnx, impiegato per la conversione di L2CS-Net tramite il seguente codice: \cref{lst:onnx-exporter}
+\lstinputlisting[float,language=Python,label={lst:onnx-exporter}]{listings/onnx_exporter.py}
 
 \section{Libreria Keras}
-La libreria Keras è una libreria open-source di alto livello per il deep learning, scritta in Python, funziona sopra il motore di calcolo Tensorflow.
-Keras è stata utilizzata per effettuare il Fine-Tuning di MobileNetV2 nella sezione \ref{chap:mobilenetv2_ft}, per creare la rete CNN della sezione \ref{chap:build_cnn_model} e per scrivere la rete neurale della sezione \ref{chap:landmark_based_model}.
+Keras è una libreria open-source di alto livello per il \textit{deep learning}, scritta in Python e basata sul motore di calcolo TensorFlow.  
+Nel presente lavoro, Keras è stata utilizzata per:
+\begin{itemize}
+    \item Eseguire il Fine-Tuning di MobileNetV2 (Sezione~\ref{chap:mobilenetv2_ft}).
+    \item Sviluppare la rete CNN descritta nella Sezione~\ref{chap:build_cnn_model}.
+    \item Implementare la rete neurale fully connected basata sui landmark (Sezione~\ref{chap:landmark_based_model}).
+\end{itemize}
 
 \section{Libreria XGBoost}
-Dalla libreria \texttt{XGBoost} (eXtreme Gradient Boosting) è stato utilizzato il modulo \texttt{XGBoostClassifier} che permette di utilizzare un modello basato su alberi decisionali ottimizzati tramite l'algoritmo del Gradient Boosting per risolvere problemi di classificazione.
-Il modello è stato utilizzato per costruire la rete neurale basata sui landmark (\ref{chap:landmark_based_model})
+La libreria \texttt{XGBoost} (\textit{eXtreme Gradient Boosting}) \cite{xgboost} mette a disposizione il modulo \texttt{XGBoostClassifier}, che consente di utilizzare modelli basati su alberi decisionali ottimizzati tramite l'algoritmo del Gradient Boosting per la risoluzione di problemi di classificazione.  
+In questo lavoro, XGBoost è stato impiegato per costruire due dei modelli basati sui landmark (Sezione~\ref{chap:landmark_based_model}).
 
-\lstinputlisting[float,language=Python,label={lst:onnx-exporter}]{listings/onnx_exporter.py}
 
 \section{Jupyter Notebook, Numpy e Matplotlib}
 Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab.

@@ -338,175 +338,209 @@ I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'i
 
 \chapter{Rilevamento dello sguardo frontale tramite Machine Learning}
 \label{chap:frontal_gaze_with_ml}
-L'utilizzo di metodi algoritmici basati sulle coordinate dei landmark e l'utilizzo di modelli in grado di predire l'angolazione dello sguardo sono due ottimi metodi per cercare di comprendere se il volto analizzato sta guardando in fotocamera, ma ci sono ulteriori approcci che sono degni di nota, in particolare questo capitolo è dedicato a due ulteriori tentativi effettuati per comprendere se un volto ha lo sguardo diretto verso la camera.
+
+L'utilizzo di metodi algoritmici basati sulle coordinate dei landmark, insieme a modelli in grado di predire l'angolazione dello sguardo, rappresenta un approccio valido per determinare se un volto stia guardando in fotocamera. Esistono tuttavia ulteriori strategie degne di nota. Questo capitolo è dedicato a tre approcci alternativi sviluppati per stabilire se uno sguardo sia rivolto verso la camera.
 
 \section{Fine-Tuning di modelli CNN}
 \label{chap:mobilenetv2_ft}
-In questo capitolo viene approfondito il metodo che sceglie di fare utilizzo di Reti neurali convoluzionali già preaddestrate come classificatori per poi eseguire la tecnica del Fine Tuning in modo da riaddestrare i modelli a predire se un volto ha o no lo sguardo diretto verso la camera.
-Per eseguire i seguenti test è stato necessario l'utilizzo di dateset di grandi dimensioni e con dati reali, per cui la scelta è ricaduta sul dataset \href{https://www.kaggle.com/datasets/estopadilla/gaze-direction-detection}{Gaze Direction Detection} disponibile sulla piattaforma Kaggle.
-Il dataset ``Gaze Direction Detection'' contiene 53000 coppie di occhi ed è rilasciato sotto forma di array binario numpy (.npz) contenente all'interno 3 array: \begin{itemize}
-    \item array \texttt{targets}: contiene valori 0 e 1, dove il valore \textit{i-esimo} indica che l'immagine \textit{i-esima} guarda in camera (se = 1) o altrove (se = 0)
-    \item array \texttt{right\_eyes}: Immagini raffiguranti gli occhi destri
-    \item array \texttt{left\_eyes}: Immagini raffiguranti gli occhi sinistri
+
+In questa sezione viene approfondito l'utilizzo di reti neurali convoluzionali preaddestrate come classificatori, successivamente adattate tramite la tecnica del \textit{Fine-Tuning}, con l'obiettivo di predire se un volto presenti lo sguardo diretto in camera.  
+
+Per eseguire i test è stato necessario disporre di un dataset di grandi dimensioni con dati reali. La scelta è ricaduta sul dataset \href{https://www.kaggle.com/datasets/estopadilla/gaze-direction-detection}{Gaze Direction Detection}, disponibile sulla piattaforma Kaggle.  
+
+Il dataset contiene circa 53000 coppie di occhi ed è rilasciato sotto forma di array binario \texttt{numpy} (.npz), al cui interno sono presenti tre array principali:
+\begin{itemize}
+    \item \texttt{targets}: contiene valori binari (0 e 1), dove l'elemento $i$-esimo indica se lo sguardo corrispondente negli altri array è rivolto in camera (1) oppure altrove (0).
+    \item \texttt{right\_eyes}: immagini raffiguranti gli occhi destri.
+    \item \texttt{left\_eyes}: immagini raffiguranti gli occhi sinistri.
 \end{itemize}
-Ogni immagine del dataset è un'immagine di dimensioni \(64 \cdot 64\) raffigurante l'occhio ed una parte del volto che in alcuni casi arrivava fino a raffigurare una piccola parte del naso.
-Il dataset è stato successivamente diviso tra dataset di training e dataset di test (40000 immagini di training set e 4000 di test set).
-Training set e Test set contengono inoltre lo stesso numero di immagini tra sguardo in camera e sguardo non in camera.
-Il Fine-Tuning è stato eseguito sul modello MobileNetV2, la cui architettura è descritta nel Paper \cite[MobileNetV2: Inverted Residuals and Linear Bottlenecks]{Sandler2018MobileNetV2IR}.
-Al modello MobileNetV2 è stato sostituito il layer di output con un layer Dense di 2 nodi con la funzione di attivazione ``softmax''. Il modello è stato successivamente addestrato utilizzando ``Adam'' come funzione di ottimizzazione e come funzione di loss la funzione ``categorical\_crossentropy''.
-Sono inoltre stati seguiti i seguenti passagi per eseguire il training della rete: \begin{itemize}
-    \item Tecnica dell'early stop: tecnica che consiste nel monitorare la funzione di loss e di interrompere l'addestramento quando per \(n\) epoche di fila non si riscontrano miglioramenti per poi utilizzare gli ultimi pesi in cui si è riscontrato un miglioramento
-    \item Eseguire un primo ciclo di addestramento dei soli ultimi strati congelando gli altri
-    \item Eseguire l'addestramento della rete sul dataset
+
+Ogni immagine ha dimensioni \(64 \times 64\) e raffigura un occhio con una piccola porzione del volto, comprendendo, a volte, anche parte del naso.  
+Il dataset è stato suddiviso in training set (40000 immagini) e test set (4000 immagini), bilanciati in termini di immagini con sguardo in camera e non.  
+
+Il Fine-Tuning è stato eseguito sul modello MobileNetV2, la cui architettura è descritta in \cite{Sandler2018MobileNetV2IR}. Il layer di output è stato sostituito con un layer denso (\texttt{Dense}) di 2 nodi con funzione di attivazione \texttt{softmax}. L'addestramento è stato condotto con l’ottimizzatore \texttt{Adam} e come funzione di loss \texttt{categorical\_crossentropy}.  
+
+Sono inoltre stati adottati i seguenti accorgimenti:
+\begin{itemize}
+    \item \textbf{Early stopping}: interruzione dell'addestramento se, per $n$ epoche consecutive, non si osservano miglioramenti della loss, mantenendo i pesi relativi al miglior risultato.
+    \item Addestramento iniziale dei soli strati finali, mantenendo congelati gli altri.
+    \item Successivo addestramento dell'intera rete.
 \end{itemize}
-\subsection{Fine-Tuning di MobileNet V2 versione 1}
+
+\subsection{Fine-Tuning di MobileNetV2 - versione 1}
 \label{chap:mobilenetv2_ft_v1}
-Nella versione 1 del modello di Fine-Tuning di MobileNet V2, il modello è stato addestrato utilizzando le immagini del dataset ``Gaze Direction Detection''. \\
-Il modello sul test set riporta un'accuracy del 74.0\%. \\
-La matrice di confusione riportata è la seguente: \Cref{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}. \\
-Per riuscire integrare il modello all'interno di OFIQ è stato necessario esportare il modello in formato Onnx e definire una pipeline di preprocessing delle immagini all'interno del software OFIQ.La pipeline presenta i seguenti step: \begin{itemize}
-    \item Viene costruito un bounding box rettangolare che racchiuda i landmark della rete adnet attorno all'occhio
-    \item Viene trovato il lato maggiore del bounding box e moltiplicato per un ``fattore di scala''.
-    \item Viene ridisegnato il bounding box rettangolare attorno alla nuova dimensione del lato maggiore mantenendo l'occhio al centro.
-    \item Viene ridimensionata l'immagine alle dimensioni originali richieste da MobileNetV2: \(224 \cdot 224\)
-    \item Viene data l'immagine in pasto al modello.
-    \item L'output del modello sono 2 tensori dove il tensore \(0\) indica la percentuale di probabilità che ha l'immagine di avere sguardo frontale, mentre il tensore \(1\) la percentuale contraria.
+
+Nella prima versione il modello è stato addestrato direttamente sulle immagini originali del dataset ``Gaze Direction Detection''.  
+
+\textbf{Accuracy sul test set}: 74.0\%.  
+
+La matrice di confusione è riportata in \Cref{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}.  
+
+Per integrare il modello in OFIQ,  è stato esportato in formato ONNX e affiancato da una pipeline di preprocessing delle immagini, così strutturata:
+\begin{itemize}
+    \item Costruzione di un bounding box attorno ai landmark dell'occhio rilevati da ADNet.
+    \item Individuazione del lato maggiore del bounding box e moltiplicazione per un fattore di scala (2.5).
+    \item Ricostruzione del bounding box mantenendo l'occhio al centro.
+    \item Ridimensionamento dell'immagine a \(224 \times 224\), dimensione richiesta da MobileNetV2.
+    \item Inferenza tramite il modello, che restituisce due valori: probabilità di sguardo frontale (tensore 0) e probabilità contraria (tensore 1).
 \end{itemize}
 
 \begin{figure}
     \centering
     \includegraphics[width=.6\linewidth]{figures/fine-tuning-mobilenetv2-version-1-confusion-matrix.png}
-    \caption{Matrice di confusione del fine tuning del modello mobilenetv2 versione 1}
+    \caption{Matrice di confusione del Fine-Tuning di MobileNetV2, versione 1}
     \label{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}
 \end{figure}
 
-\subsection{Fine-Tuning di MobileNetV2 versione 2}
+\subsection{Fine-Tuning di MobileNetV2 - versione 2}
 \label{chap:mobilenetv2_ft_v2}
-Dato che il modello precedentemente introdotto \ref{chap:mobilenetv2_ft_v1} portava buoni score sul test set ma mostrava problemi in fase di generalizzazione una volta sottoposti al modello immagini relative ad ulteriori dataset, nella versione 2 del modello si è intervenuti sulla capacità di generalizzazione del dataset in particolare cercando di far valutare al modello il solo occhio dalle immagini del dataset iniziali.
-E' stata quindi definita il seguente preprocessing per tutte le immagini del dataset: \begin{itemize}
-    \item utilizzo del classificatore HaarCascade di OpenCV per identificare la posizione degli occhi nelle immagini del dataset
-    \item Il classificatore restituisce il bounding box dell'occhio che viene ritagliato dall'immagine originale
-    \item L'immagine ottenuta viene ridimensionata alla dimensione \(96 \cdot 96\)
-    \item Viene aggiunto un bordo nero fino a far arrivare l'immagine alla dimensione richiesta da MobileNetV2 (\(224 \cdot 224\)), questo viene fatto per non far ridimensionare troppo l'immagine e non aggiungere eccessivo rumore che potrebbe portare il modello a non generalizzare bene su immagini con risoluzioni diverse
+
+Poiché la versione 1 mostrava buoni risultati sul test set ma scarsa capacità di generalizzazione su dataset differenti, nella versione 2 si è intervenuti sul preprocessing, facendo in modo che il modello valutasse esclusivamente l'occhio.  
+
+Il preprocessing adottato è il seguente:
+\begin{itemize}
+    \item Rilevamento degli occhi tramite classificatore HaarCascade di OpenCV.
+    \item Ritaglio del bounding box dell'occhio.
+    \item Ridimensionamento a \(96 \times 96\).
+    \item Aggiunta di un bordo nero fino a raggiungere \(224 \times 224\), così da preservare le proporzioni senza introdurre rumore eccessivo.
 \end{itemize}
-Il modello sul test set riporta un'accuracy del 78.4\%. \\
-La matrice di confusione riportata è la seguente: \Cref{fig:fine_tuning_mobilenetv2_version_2_confusion_matrix}. \\
-Per riuscire ad utilizzare il modello su OFIQ è stata definita una pipeline di preprocessing analoga a quella utilizzata sul dataset per la versione 2 del modello.
+
+\textbf{Accuracy sul test set}: 78.4\%.  
+
+La matrice di confusione è riportata in \Cref{fig:fine_tuning_mobilenetv2_version_2_confusion_matrix}.  
 
 \begin{figure}
     \centering
     \includegraphics[width=.6\linewidth]{figures/fine-tuning-mobilenetv2-version-2-confusion-matrix.png}
-    \caption{Matrice di confusione del fine tuning del modello mobilenetv2 versione 2}
+    \caption{Matrice di confusione del Fine-Tuning di MobileNetV2, versione 2}
     \label{fig:fine_tuning_mobilenetv2_version_2_confusion_matrix}
 \end{figure}
 
-\section{Costruzione di un modello CNN, gdd CNN}
+\section{Costruzione di un modello CNN \texttt{gdd CNN}}
 \label{chap:build_cnn_model}
-Per riuscire a minimizzare l'impatto del rumore presente durante il ridimensionamento delle immagini e di particolari tecniche di preprocessing è stato implementato un modello CNN from scratch con la differenza rispetto a MobileNetV2 di accettare immagini di dimensione ridotta: \(96 \cdot 96\).
-La struttura del modello è descritta nell'immagine \Cref{fig:custom_CNN_architecture}.
-Contiene 4 strati in cui si alternano Layer di convoluzioni e layer di max pooling che dimezzano la dimensione dei batch fino ad arrivare al layer finale con una dimensione \(6 \cdot 6 \cdot 256\). La parte finale è una rete fully connected con 512 nodi ed un layer di Dropout per favorire l'addestramento, fino all'ultimo layer con le 2 classi finali e la ``softmax'' come funzione di attivazione.
-Per l'addestramento del modello sono state utilizzate le seguente tecniche: \begin{itemize}
-    \item ``Adam'' come funzione di ottimizzazione.
-    \item ``sparse\_categorical\_crossentropy'' come funzione di loss.
-    \item la tecnica dell'Early stop.
-\end{itemize} 
-Il modello è stato addestrato e testato sullo stesso dataset utilizzato per il Fine Tuning dei precedenti modelli ``Gaze Direction Detection'' ed è stato successivamente convertito in formato Onnx per permetterne l'esecuzione all'interno del software OFIQ.
-La pipeline utilizzata sulle immagini prima di essere date in pasto al modello è la seguente: \begin{itemize}
-    \item utilizzo del classificatore HaarCascade di OpenCV per identificare la posizione degli occhi nelle immagini del dataset
-    \item Il classificatore restituisce il bounding box dell'occhio che viene ritagliato dall'immagine originale
-    \item L'immagine ottenuta viene ridimensionata alla dimensione \(96 \cdot 96\)
+
+Per ridurre l'impatto del rumore dovuto al ridimensionamento e a particolari tecniche di preprocessing, è stato implementato un modello CNN da zero, accettando in input immagini di dimensione \(96 \times 96\).  
+
+La struttura del modello, illustrata in \Cref{fig:custom_CNN_architecture}, comprende 4 blocchi alternati di convoluzione e max pooling, fino a ottenere una dimensione di \(6 \times 6 \times 256\). Segue una rete fully connected con 512 nodi, un layer di dropout e infine il layer di output con 2 classi e funzione di attivazione \texttt{softmax}.  
+
+Addestramento:
+\begin{itemize}
+    \item Ottimizzatore: \texttt{Adam}.
+    \item Funzione di loss: \texttt{sparse\_categorical\_crossentropy}.
+    \item Early stopping.
 \end{itemize}
-Il modello sul test set riporta un'accuracy dell'85.0\%.
-La matrice di confusione riportata è la seguente: \Cref{fig:custom_cnn_confusion_matrix} \\
-Il modello verrà chiamato \texttt{gdd CNN} acronimo di \texttt{Gaze Direction Detector CNN}.
+
+Il modello è stato addestrato sul dataset ``Gaze Direction Detection'' e successivamente convertito in formato ONNX per l'integrazione in OFIQ.  
+
+Pipeline di preprocessing:
+\begin{itemize}
+    \item Rilevamento dell'occhio con HaarCascade di OpenCV.
+    \item Ritaglio del bounding box dell'occhio;
+    \item Ridimensionamento a \(96 \times 96\).
+\end{itemize}
+
+\textbf{Accuracy sul test set}: 85.0\%.  
+
+La matrice di confusione è riportata in \Cref{fig:custom_cnn_confusion_matrix}.  
+
+Il modello è stato denominato \texttt{gdd CNN} (\texttt{Gaze Direction Detector CNN}).
 
 \begin{figure}
     \centering
     \includegraphics[width=.6\linewidth]{figures/custom-cnn-confusion-matrix.png}
-    \caption{Matrice di confusione del modello CNN from scratch}
+    \caption{Matrice di confusione del modello CNN sviluppato da zero}
     \label{fig:custom_cnn_confusion_matrix}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=.2\linewidth]{figures/custom-CNN-architecture}
-    \caption{Struttura della CNN implementata}
+    \caption{Architettura della CNN implementata}
     \label{fig:custom_CNN_architecture}
 \end{figure}
 
-\section{Costruzione di modelli di machine learning basati sui landmark facciali}
+\section{Modelli di machine learning basati sui landmark facciali}
 \label{chap:landmark_based_model}
-Dati i problemi di generalizzazione riscontrati nei precedenti modelli basati su CNN basati sui risultati ottenuti su dataset differenti, viene costruita una soluzione con il solo utilizzo di CNN capaci di estrarre i Landmark facciali, per poi addestrare modelli che possano predire lo sguardo in camera basati sulle posizioni dei landmark.
-I modelli sviluppati mantengono tutti la stessa struttura cambiando però i componenti di riferimento, la struttura presenta i seguenti componenti: \begin{itemize}
-    \item estrattore di landmark: Un modello in grado di estrarre i landmark degli occhi partendo dall'immagine di un volto, i componenti testati sono i seguenti: \begin{itemize}
-        \item MediaPipe Face Mesh: MediaPipe è una suite di librerie e strumenti open source sviluppati da Google, Face Mesh è l'estrattore di landmark del volto di MediaPipe. MediaPipe Face Mesh è in grado di estrarre 20 landmark per occhio che riescono a descrivere la posizione dell'occhio e dell'iride
-        \item ADNet: modello per estrarre landmark da un volto, è in grado di estrarre 9 landmark per occhio.
+
+Per affrontare i problemi di generalizzazione emersi nei modelli CNN, è stata sviluppata una soluzione basata sull'estrazione dei landmark facciali e sul loro utilizzo come input per modelli di machine learning.  
+
+Struttura generale:
+\begin{itemize}
+    \item \textbf{Estrattore di landmark}: due approcci testati
+    \begin{itemize}
+        \item \textbf{MediaPipe Face Mesh} (20 landmark per occhio, comprensivi dell'iride, Paper~\cite{48292}).
+        \item \textbf{ADNet} (9 landmark per occhio).
     \end{itemize}
-    \item pandas dataframe: I landmark estratti vengono inseriti in un pandas dataframe.
-    \item modello predittivo: \begin{itemize}
-        \item XGBoost (eXtreme Gradient Boosting): libreria open source di apprendimento automatico basata sull'algoritmo gradient boosting
-        \item Rete neurale fully connected in Keras: rete neurale formata da un layer di input con un neurone per ogni colonne del dataset, un hidden layer composto da 128 neuroni ed un layer finale con singolo neurone e con funzione di attivazione ``sigmoid''.
+    \item \textbf{DataFrame pandas}: per la gestione dei landmark.
+    \item \textbf{Modello predittivo}: 
+    \begin{itemize}
+        \item \textbf{XGBoost}.
+        \item Rete neurale fully connected in Keras (input layer con un neurone per colonna, hidden layer da 128 neuroni, output layer con un neurone e attivazione \texttt{sigmoid}).
     \end{itemize}
 \end{itemize}
-Per l'addestramento di entrambi i modelli è stata utilizzata la tecnica del KFold cross validation. Inoltre i landmark sono stati presi per entrambi gli estrattori in forma normalizzata per favorire la capacità di generalizzazione del modello. Di seguito verranno riportati i risultati ottenutti per ogni combinazione di componenti.
-Il training set ed il test set dei modelli sono composti da immagini appartenenti ai dataset ONOT per le immagini con sguardo in camera e TONO per le immagini non in camera, i dataset contengono un totale di circa 1000 immagini. Non è stato possibile utilizzare il dataset ``Gaze Direction Detection'' in quanto le immagini contenute al suo interno non erano supportate dagli estrattori di landmark perchè non contenevano l'immagine dell'intero volto. I modelli sono stati ulteriormente testati anche su un sotto dataset estratto da Biolab di immagini reali tutte con lo sguardo frontale.
 
-\subsection{Estrattore landmark MediePipe Face Mesh con modello XGBoost}
-Accuracy su test set: 77.0\% \\
-Equal Error Rate su test set: 26.5\% \\
-Accuracy su sotto dataset Biolab: 63.2\% \\
-Matrice di confusione su test set: \cref{fig:mediapipe_xgboost_confusion_matrix}
+L'addestramento ha utilizzato la tecnica della \textit{K-Fold Cross Validation}, con landmark normalizzati per favorire la generalizzazione.  
 
-\subsection{Estrattore landmark MediePipe Face Mesh con modello Keras}
-Accuracy su test set: 64.0\% \\
-Equal Error Rate su test set: 50.0\% \\
-Accuracy su sotto dataset Biolab: 0.0\% \\
-Matrice di confusione su test set: \cref{fig:mediapipe_keras_confusion_matrix}
+Dataset:
+\begin{itemize}
+    \item \textbf{ONOT}: immagini con sguardo in camera;
+    \item \textbf{TONO}: immagini con sguardo non in camera;
+\end{itemize}
+per un totale di circa 1.000 immagini.  
 
-\subsection{Estrattore landmark ADNet con modello XGBoost}
-Accuracy su test set: 64.3\% \\
-Equal Error Rate su test set: 43.1\% \\
-Accuracy su sotto dataset Biolab: 12.1\% \\
-Matrice di confusione su test set: \cref{fig:adnet_xgboost_confusion_matrix}
+Il dataset ``Gaze Direction Detection'' non è stato utilizzato poiché non includeva il volto completo, necessario agli estrattori di landmark. I modelli sono stati inoltre testati su un sotto-dataset di immagini reali fornite da Biolab, tutte con sguardo frontale.
 
-\subsection{Estrattore landmark ADNet con modello Keras}
-Accuracy su test set: 69.5\% \\
-Equal Error Rate su test set: 50.0\% \\
-Accuracy su sotto dataset Biolab: 0.0\% \\
-Matrice di confusione su test set: \cref{fig:mediapipe_keras_confusion_matrix}
+\subsection{Risultati dei modelli basati su landmark}
+
+\begin{itemize}
+    \item \textbf{MediaPipe Face Mesh + XGBoost}  
+    Accuracy: 77.0\% — Equal Error Rate: 26.5\% — Accuracy Biolab: 63.2\%.  
+    Matrice di confusione: \Cref{fig:mediapipe_xgboost_confusion_matrix}.
+    
+    \item \textbf{MediaPipe Face Mesh + Keras}  
+    Accuracy: 64.0\% — Equal Error Rate: 50.0\% — Accuracy Biolab: 0.0\%.  
+    Matrice di confusione: \Cref{fig:mediapipe_keras_confusion_matrix}.
+    
+    \item \textbf{ADNet + XGBoost}  
+    Accuracy: 64.3\% — Equal Error Rate: 43.1\% — Accuracy Biolab: 12.1\%.  
+    Matrice di confusione: \Cref{fig:adnet_xgboost_confusion_matrix}.
+    
+    \item \textbf{ADNet + Keras}  
+    Accuracy: 69.5\% — Equal Error Rate: 50.0\% — Accuracy Biolab: 0.0\%.  
+    Matrice di confusione: \Cref{fig:adnet_keras_confusion_matrix}.
+\end{itemize}
 
 \begin{figure}[htbp]
     \centering
-    % Riga 1
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/mediapipe_xgboost_confusion_matrix.png}
-        \caption{Matrice di confusione del modello con MediePipe e XGBoost}
+        \caption{MediaPipe + XGBoost}
         \label{fig:mediapipe_xgboost_confusion_matrix}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/mediapipe_keras_confusion_matrix.png}
-        \caption{Matrice di confusione del modello con MediePipe e Rete Keras}
+        \caption{MediaPipe + Keras}
         \label{fig:mediapipe_keras_confusion_matrix}
     \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/adnet_xgboost_confusion_matrix.png}
-        \caption{Matrice di confusione del modello con ADNet e XGBoost}
+        \caption{ADNet + XGBoost}
         \label{fig:adnet_xgboost_confusion_matrix}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/adnet_keras_confusion_matrix.png}
-        \caption{Matrice di confusione del modello con ADNet e Keras}
+        \caption{ADNet + Keras}
         \label{fig:adnet_keras_confusion_matrix}
     \end{subfigure}
-
-    \caption{Matrice di confusione dei modelli basati sui landmark}
+    \caption{Matrici di confusione dei modelli basati su landmark facciali}
 \end{figure}
+
 
 
 \chapter{Strumenti utilizzati per lo sviluppo delle metriche}

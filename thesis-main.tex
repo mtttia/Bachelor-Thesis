@@ -8,6 +8,7 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{cleveref}
+\usepackage{subcaption}
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
@@ -32,7 +33,7 @@
 \begin{abstract}	
 La visione artificiale sta venendo sempre più utilizzata nel riconoscimento di un soggetto tramite immagini facciali, ambito in cui si stanno diffondendo sistemi di riconoscimento biometrico automatico.
 In questi contesti, è fondamentale garantire un'acquisizione controllata e standardizzata delle immagini facciali, al fine di ridurre errori di riconoscimento e vulnerabilità a minacce come il face morphing.
-Una cattiva acquisizione può compromettere l’intero processo biometrico, esponendo il sistema a minacce quali la falsificazioni e riducendone l’affidabilità.
+Una cattiva acquisizione può compromettere l'intero processo biometrico, esponendo il sistema a minacce quali la falsificazioni e riducendone l'affidabilità.
 Questo progetto contribuisce allo sviluppo ed alla valutazione di un software che ha l'obbiettivo di implementare un draft ISO, volto a valutare la qualità dell'acquisizione delle immagini facciali secondo diverse metriche.
 \end{abstract}
 
@@ -53,32 +54,39 @@ Questo progetto contribuisce allo sviluppo ed alla valutazione di un software ch
 \label{chap:introduzione}
 %----------------------------------------------------------------------------------------
 \section{Motivazioni}
-Nell’ambito della visione artificiale, e in particolare del riconoscimento facciale, si è ottenuta negli ultimi anni a una significativa riduzione dei tassi di errore grazie all’introduzione di algoritmi basati su tecniche di deep learning.
-Tuttavia, gli errori di riconoscimento rimangono ancora rilevanti e possono essere influenzati da numerosi fattori, tra cui le modalità di acquisizione dell’immagine, la cooperazione del soggetto durante la cattura biometrica, la specifica implementazione dell’algoritmo di confronto e la logica decisionale associata.
-In questo contesto, risulta evidente la necessità di un ammodernamento delle procedure di acquisizione, per evitare un peggioramento delle prestazioni dei sistemi biometrici a fronte dell’incremento dei volumi di dati da elaborare.
-L’urgenza di intervenire su questi aspetti si collega anche a una maggiore consapevolezza dell’importanza dell’usabilità dei sistemi biometrici, sia per gli utenti finali sia per gli operatori umani, i quali possono contribuire in modo significativo alla riduzione degli errori attraverso una migliore qualità nella fase di acquisizione.
-Spesso, infatti, un sistema progettato esclusivamente sulla base della tecnologia rischia di mostrare i propri limiti se non considera in modo integrato le dinamiche dell’interazione umana.
-Parallelamente, l’adozione crescente del riconoscimento facciale in contesti di ampia scala, come la gestione dei documenti di identità elettronici, le applicazioni commerciali e le attività di controllo delle forze dell’ordine, ha comportato la raccolta massiva di immagini del volto, che fungono sia da campioni di riferimento in fase di registrazione sia da elementi di confronto successivo.
-Programmi di portata nazionale e internazionale, come quelli attivati in Cina, nell’Unione Europea, negli Stati Uniti e in India, testimoniano il crescente impiego di questa tecnologia in settori critici quali i trasporti, l’immigrazione e la verifica dell’identità.
+Nell'ambito della visione artificiale, e in particolare del riconoscimento facciale, si è ottenuta negli ultimi anni a una significativa riduzione dei tassi di errore grazie all'introduzione di algoritmi basati su tecniche di deep learning.
+Tuttavia, gli errori di riconoscimento rimangono ancora rilevanti e possono essere influenzati da numerosi fattori, tra cui le modalità di acquisizione dell'immagine, la cooperazione del soggetto durante la cattura biometrica, la specifica implementazione dell'algoritmo di confronto e la logica decisionale associata.
+In questo contesto, risulta evidente la necessità di un ammodernamento delle procedure di acquisizione, per evitare un peggioramento delle prestazioni dei sistemi biometrici a fronte dell'incremento dei volumi di dati da elaborare.
+L'urgenza di intervenire su questi aspetti si collega anche a una maggiore consapevolezza dell'importanza dell'usabilità dei sistemi biometrici, sia per gli utenti finali sia per gli operatori umani, i quali possono contribuire in modo significativo alla riduzione degli errori attraverso una migliore qualità nella fase di acquisizione.
+Spesso, infatti, un sistema progettato esclusivamente sulla base della tecnologia rischia di mostrare i propri limiti se non considera in modo integrato le dinamiche dell'interazione umana.
+Parallelamente, l'adozione crescente del riconoscimento facciale in contesti di ampia scala, come la gestione dei documenti di identità elettronici, le applicazioni commerciali e le attività di controllo delle forze dell'ordine, ha comportato la raccolta massiva di immagini del volto, che fungono sia da campioni di riferimento in fase di registrazione sia da elementi di confronto successivo.
+Programmi di portata nazionale e internazionale, come quelli attivati in Cina, nell'Unione Europea, negli Stati Uniti e in India, testimoniano il crescente impiego di questa tecnologia in settori critici quali i trasporti, l'immigrazione e la verifica dell'identità.
 Tuttavia, molte delle immagini facciali oggi raccolte provengono da dispositivi di acquisizione non specificamente progettati per l'acquisizione di immagini del volto.
-Le immagini destinate a documenti d’identità o a database ufficiali vengono per lo più acquisite con telecamere configurate secondo specifiche documentarie, come lo standard ISO/IEC 39794-5, che ne disciplina l’inquadratura e le caratteristiche fotografiche.
+Le immagini destinate a documenti d'identità o a database ufficiali vengono per lo più acquisite con telecamere configurate secondo specifiche documentarie, come lo standard ISO/IEC 39794-5, che ne disciplina l'inquadratura e le caratteristiche fotografiche.
 In assenza di strumenti automatici di valutazione della qualità, la verifica della conformità ai requisiti previsti dagli standard vigenti viene spesso affidata al fotografo.
-A questo si aggiunge il problema rappresentato da comportamenti involontari dei soggetti durante la cattura, portando ad una  variazioni tra l’immagine di riferimento e quella di confronto, compromettendo l’efficacia del riconoscimento.
+A questo si aggiunge il problema rappresentato da comportamenti involontari dei soggetti durante la cattura, portando ad una  variazioni tra l'immagine di riferimento e quella di confronto, compromettendo l'efficacia del riconoscimento.
 È pertanto essenziale garantire la coerenza con la presentazione canonica prevista dagli standard, ossia un volto centrato e frontale, con espressione neutra, occhi aperti e privo di montature di occhiali che coprano gli occhi o troppo spesse.
-Considerando la grande eterogeneità degli utenti, per età, costituzione fisica, etnia, lingua, cultura, alfabetizzazione e familiarità con la tecnologia, è evidente l'importanza di un’attenta progettazione dal punto di vista dei fattori umani per migliorare l'acquisizione delle immagini facciali.
-Un’ulteriore criticità risiede nella separazione tra il processo di acquisizione dell’immagine e quello di valutazione della qualità, che spesso avviene solo in un secondo momento, quando la fotografia viene inviata a un server remoto.
-Se la qualità dell’immagine risulta inadeguata, si rende necessaria una nuova acquisizione aggravando tempi e costi.
-In questo scenario, il lavoro descritto da questa tesi si colloca nell’ambito della valutazione della qualità delle immagini del volto (ISO 29794-5), nell'ambito della specifica applicazione legata ai documenti di identità elettronici (ISO 39794-5).
+Considerando la grande eterogeneità degli utenti, per età, costituzione fisica, etnia, lingua, cultura, alfabetizzazione e familiarità con la tecnologia, è evidente l'importanza di un'attenta progettazione dal punto di vista dei fattori umani per migliorare l'acquisizione delle immagini facciali.
+Un'ulteriore criticità risiede nella separazione tra il processo di acquisizione dell'immagine e quello di valutazione della qualità, che spesso avviene solo in un secondo momento, quando la fotografia viene inviata a un server remoto.
+Se la qualità dell'immagine risulta inadeguata, si rende necessaria una nuova acquisizione aggravando tempi e costi.
+In questo scenario, il lavoro descritto da questa tesi si colloca nell'ambito della valutazione della qualità delle immagini del volto (ISO 29794-5), nell'ambito della specifica applicazione legata ai documenti di identità elettronici (ISO 39794-5).
 \section{Obbiettivo}
-Il progetto consiste in una valutazione del software OFIQ (Open Source Face Image Quality), strumento open source sviluppato per implementare le metriche descritte nel draft dello standard ISO precedentemente illustrato. Il lavoro consiste inoltre nella contribuzione allo sviluppo del software mediante l’implementazione di ulteriori metriche tra cui alcune suggerite dallo standard, ma non ancora integrate nel software. L’obiettivo principale è quello di verificare l’affidabilità di OFIQ per il controllo di qualità delle immagini facciali destinate all’identificazione biometrica, testandolo su esempi conformi alle specifiche e su esempi non conformi. Si vuole valutare se l’impiego del software durante la fase di acquisizione possa rappresentare uno strumento accurato per garantire la qualità e la conformità delle immagini biometriche.  
+Il progetto consiste in una valutazione del software OFIQ (Open Source Face Image Quality), strumento open source sviluppato per implementare le metriche descritte nel draft dello standard ISO precedentemente illustrato. Il lavoro consiste inoltre nella contribuzione allo sviluppo del software mediante l'implementazione di ulteriori metriche tra cui alcune suggerite dallo standard, ma non ancora integrate nel software. L'obiettivo principale è quello di verificare l'affidabilità di OFIQ per il controllo di qualità delle immagini facciali destinate all'identificazione biometrica, testandolo su esempi conformi alle specifiche e su esempi non conformi. Si vuole valutare se l'impiego del software durante la fase di acquisizione possa rappresentare uno strumento accurato per garantire la qualità e la conformità delle immagini biometriche.  
 
 \section{Metodo}
 Per la realizzazione di questo progetto si è partiti con la comprensione delle varie metriche descritte nel draft ISO 29794-5:2024.
 Successivamente si è testata ogni singola metrica comparando diversi dataset divisi tra immagini che soddisfano i requisiti dello standard e immagini che non soddisfano la determinata metrica che si sta valutando, in seguito a queste valutazioni si guarda la distribuzione dei risultati. 
 
-\paragraph{Structure of the Thesis}
+\section{Struttura della tesi}
+La tesi è organizzata come segue: 
+\begin{itemize}
+    \item \textbf{Capitoli 2 - 5}: presentazione delle metriche sviluppate, degli algoritmi implementati e dei modelli di machine learning proposti.
+    \item \textbf{Capitolo 6}: descrizione e spiegazione degli strumenti utilizzati per lo sviluppo delle metriche.
+    \item \textbf{Capitolo 7}: valutazione delle metriche sui dataset TONO e ONOT e sulla piattaforma FVC-Ongoing.
+    \item \textbf{Capitolo 8}: analisi dei risultati con approfondimento dei casi di fallimento per ciascun metodo.
+    \item \textbf{Capitolo 9}: conclusioni con una sintesi dei risultati ottenuti e delle prospettive di miglioramento emerse dall'analisi.
+\end{itemize}
 
-\note{At the end, describe the structure of the paper}
 
 \chapter{Implementazione della metrica per il rilevamento del difetto degli occhi rossi}
 \label{chap:red-eye}
@@ -90,7 +98,7 @@ Dato che questo difetto noto altera il colore originale delle pupille è importa
 L'implementazione di questa metrica permette di dare un riscontro sotto forma di valutazione normalizzata da 0 a 100 sulla correttezza della foto rispetto a questo difetto.
 
 \section{Requisiti preliminari}
-I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} allenata sul Wild dataset, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
+I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} \cite{9093431}, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
 \begin{figure}
     \centering
     \includegraphics[width=.6\linewidth]{figures/landmark-face.png}
@@ -146,7 +154,7 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
     \item Creazione maschera iride [Fig. iris mask] \begin{itemize}
         \item Crea maschera nera delle dimensioni della ROI
         \item Disegna cerchio bianco con raggio iride centrato sulla pupilla
-        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale
+        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale (la versione HSV è stata valutata sia con che senza questo passaggio)
     \end{itemize}
     \item Combinazione maschere [Fig. combined mask] \begin{itemize}
         \item Combina maschera occhio e maschera iride con operazione AND
@@ -195,9 +203,10 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
 \end{figure}
 
 \chapter{Implementazione della metrica per il rilevamento dello sguardo frontale}
+\label{chap:frontal_gaze_algo}
 
 \section{Obbiettivo della metrica}
-L’obiettivo della metrica è quello di assegnare uno score da 0 a 100 sul grado in cui un soggetto guarda in camera misura necessaria per garantire l’idoneità delle foto nei documenti di identità. Guardare dritto in camera è un requisito fondamentale per il riconoscimento facciale e per la conformità agli standard internazionali. 
+L'obiettivo della metrica è quello di assegnare uno score da 0 a 100 sul grado in cui un soggetto guarda in camera, misura necessaria per garantire l'idoneità delle foto nei documenti di identità. Guardare dritto in camera è un requisito fondamentale per il riconoscimento facciale e per la conformità agli standard internazionali. 
 
 \section{Requisiti preliminari}
 I requisiti preliminari di questo task sono i landmark del viso. Il draft della ISO utilizza come riferimento per l'estrazione dei landmark facciali la CNN \href{https://github.com/huangyangyu/ADNet}{ADNet} allenata sul Wild dataset, prende in input un'immagine RGB e restituisce in output un set di 98 landmark \cref{fig:landmark-face}. I landmark che interessano questa metrica sono i seguenti:
@@ -265,28 +274,31 @@ Una visione grafica dei rapporti sopra elencati è disponibile
 \end{enumerate}
 
 \chapter{Rilevamento dello sguardo frontale tramite CNN}
-\section{Selta del modello}
-Dopo un'attenta analisi sui modelli stato dell'arte nel task del rilevamento dello sguardo si è trovato come riferimento l'implementazione della rete neurale descritta all'interno del paper \cite[L2CS-NET: FINE-GRAINED GAZE ESTIMATION IN UNCONSTRAINED ENVIRONMENTS]{10372944}.
-Il modello descritto in questo paper si propone di prevedere lo sguardo in ambienti non vincolati, dando una stima degli angoli Pitch e Yaw del volto in radianti.
+
+\section{Scelta del modello}
+Dopo un'analisi dei modelli di riferimento nello stato dell'arte per il rilevamento dello sguardo, è stata individuata come base l'implementazione della rete neurale descritta nel paper \cite[L2CS-NET: Fine-Grained Gaze Estimation in Unconstrained Environments]{10372944}.  
+Il modello proposto in questo lavoro ha l'obiettivo di stimare lo sguardo in contesti non vincolati, fornendo la previsione degli angoli \textit{Pitch} e \textit{Yaw} del volto, espressi in radianti.
 
 \section{Utilizzo del modello}
-Il modello L2CS-NET viene distribuito sotto forma di pacchetto Python.
-Il pacchetto espone un API tramite la quale è possibile far processare un'immagine ed ottenere per ogni volto dell'immagine gli angoli Pitch e Yaw.
-Il modello L2CS-NET è costruito mediante il framework Pytorch ed è quindi un modello Pytorch, per poter utilizzare il modello all'interno del software OFIQ è necessario covnertire il modello al formato Onnx, un formato open utilizzato per rappresentare i modelli di machine learning.
-Il formato Onnx permettere di eseguire il modello all'interno del software OFIQ in C++ tramite la libreria OnnxRuntime disponibile in C++.
-Inoltre il pacchetto Python di L2CS-NET esegue il preprocessa dell'immagine tramite una pipeline che effettua i sueguenti step: \begin{itemize}
-    \item Utilizza il modello RetinaFace (dalla libreria face detection) per trovare il bounding box dei vari volti all'interno dell'immagine
-    \item Per ogni volto viene presa in considerazione solamente la parte dell'immagine compresa all'interno della bounding box (regione di interesse)
-    \item Per ogni regione di interesse viene convertito lo spazio colori da BGR a RGB
-    \item Ogni regione di interesse viene ridimensionato in un'immagine (224 * 224)
-    \item Ogni regione di interesse viene passata al modello ResNet-50 seguito da 2 layer fully-connected che ritornano in output 90 classi rappresentanti intervalli discreti (sia per pitch che per yaw) con all'interno un valore rappresentante la probabilità che lo sguardo per il relativo angolo si trovi in quell'intervallo
-    \item Per ogni valore ritornato da ResNet-50 viene applicata la funzione Softmax di modo da avere la probabilità in percentuale che lo sguardo si trovi all'interno di quell'intervallo
-    \item Vengono moltiplicate le probabilità che lo sguardo si trovi in quell'intervallo per l'indice della probabilità nel vettore dei tensori
-    \item Viene fatta la somma dei valori ottenuti precedentemente
-    \item La somma viene moltiplicata per quattro ed il risultato sottratto di 180, in modo da convertire ogni probabilità ottenuta gradi.
-    \item Viene eseguita la conversione da gradi a radianti
+Il modello L2CS-Net è distribuito sotto forma di pacchetto Python che espone un'API attraverso la quale è possibile processare un'immagine ed ottenere, per ciascun volto rilevato, i valori degli angoli \textit{Pitch} e \textit{Yaw}.  
+Il modello è stato implementato in PyTorch e, per poter essere integrato nel software OFIQ, è stato necessario convertirlo nel formato \texttt{ONNX}, uno standard open-source per la rappresentazione di modelli di machine learning. Tale formato consente l'esecuzione in C++ tramite la libreria \texttt{ONNX Runtime}, già disponibile all'interno del software.  
+
+Il pacchetto Python originale di L2CS-Net include inoltre una pipeline di preprocessing che segue i seguenti passaggi:  
+\begin{itemize}
+    \item Utilizzo del modello RetinaFace (fornito dalla libreria \texttt{face\_detection}) per individuare le bounding box dei volti presenti nell'immagine.
+    \item Estrazione della regione di interesse corrispondente a ciascuna bounding box
+    \item Conversione dello spazio colore da BGR a RGB.
+    \item Ridimensionamento di ciascuna regione di interesse a $224 \times 224$ pixel.
+    \item Elaborazione delle immagini tramite ResNet-50, seguita da due layer fully-connected che producono in output 90 classi rappresentanti intervalli discreti sia per \textit{Pitch} che per \textit{Yaw}, ognuna associata a una probabilità.
+    \item Applicazione della funzione Softmax per ottenere la distribuzione di probabilità normalizzata sugli intervalli.
+    \item Calcolo del valore atteso dell'angolo come somma pesata delle probabilità per ciascun intervallo.
+    \item Conversione del risultato da classi discrete a gradi, mediante moltiplicazione per quattro e successiva sottrazione di 180.
+    \item Trasformazione finale da gradi a radianti.
 \end{itemize}
-I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'interno del software OFIQ tramite la libreria open cv per cpp, mentre per trovare il bounding box del volto all'interno dell'immagine viene utilizzato il modello "SSD Face Detector CNN" che riporta risultati molto simili a quelli di RetinaFace, la scelta di utilizzare questo modello è dettata dal fatto di averlo già a disposizione all'interno del software in formato Onnx.
+
+Le operazioni di preprocessing basate su OpenCV possono essere facilmente replicate all'interno di OFIQ tramite la libreria \texttt{OpenCV} per C++.  
+Per la rilevazione della bounding box facciale, invece, è stato utilizzato il modello \textit{SSD Face Detector CNN}, già integrato in OFIQ in formato \texttt{ONNX}. Questo modello fornisce risultati comparabili a quelli di RetinaFace.
+
 
 \section{Implementazione della metrica}
 
@@ -334,6 +346,213 @@ I passaggi che includono l'utilizzo di open cv sono facilmente replicabili all'i
     \item \( score = round((1 - (\frac{min(value, 45)}{45}))*100) \) (Uso 45 come valore limite, tutti valore da 45 a 180 vengono classificati come punteggio 0)
     \item value è il valore assoluto dell'angolo più lontano da 0 Gradi, mentre score è la valutazione dell'immagine da 0 a 100
 \end{enumerate}
+
+\chapter{Rilevamento dello sguardo frontale tramite Machine Learning}
+\label{chap:frontal_gaze_with_ml}
+
+L'utilizzo di metodi algoritmici basati sulle coordinate dei landmark, insieme a modelli in grado di predire l'angolazione dello sguardo, rappresenta un approccio valido per determinare se un volto stia guardando in fotocamera. Esistono tuttavia ulteriori strategie degne di nota. Questo capitolo è dedicato a tre approcci alternativi sviluppati per stabilire se uno sguardo sia rivolto verso la camera.
+
+\section{Fine-Tuning di modelli CNN}
+\label{chap:mobilenetv2_ft}
+
+In questa sezione viene approfondito l'utilizzo di reti neurali convoluzionali preaddestrate come classificatori, successivamente adattate tramite la tecnica del \textit{Fine-Tuning}, con l'obiettivo di predire se un volto presenti lo sguardo diretto in camera.  
+
+Per eseguire i test è stato necessario disporre di un dataset di grandi dimensioni con dati reali. La scelta è ricaduta sul dataset \href{https://www.kaggle.com/datasets/estopadilla/gaze-direction-detection}{Gaze Direction Detection}, disponibile sulla piattaforma Kaggle.  
+
+Il dataset contiene circa 53000 coppie di occhi ed è rilasciato sotto forma di array binario \texttt{numpy} (.npz), al cui interno sono presenti tre array principali:
+\begin{itemize}
+    \item \texttt{targets}: contiene valori binari (0 e 1), dove l'elemento $i$-esimo indica se lo sguardo corrispondente negli altri array è rivolto in camera (1) oppure altrove (0).
+    \item \texttt{right\_eyes}: immagini raffiguranti gli occhi destri.
+    \item \texttt{left\_eyes}: immagini raffiguranti gli occhi sinistri.
+\end{itemize}
+
+Ogni immagine ha dimensioni \(64 \times 64\) e raffigura un occhio con una piccola porzione del volto, comprendendo, a volte, anche parte del naso.  
+Il dataset è stato suddiviso in training set (40000 immagini) e test set (4000 immagini), bilanciati in termini di immagini con sguardo in camera e non.  
+
+Il Fine-Tuning è stato eseguito sul modello MobileNetV2, la cui architettura è descritta in \cite{Sandler2018MobileNetV2IR}. Il layer di output è stato sostituito con un layer denso (\texttt{Dense}) di 2 nodi con funzione di attivazione \texttt{softmax}. L'addestramento è stato condotto con l'ottimizzatore \texttt{Adam} e come funzione di loss \texttt{categorical\_crossentropy}.  
+
+Sono inoltre stati adottati i seguenti accorgimenti:
+\begin{itemize}
+    \item \textbf{Early stopping}: interruzione dell'addestramento se, per $n$ epoche consecutive, non si osservano miglioramenti della loss, mantenendo i pesi relativi al miglior risultato.
+    \item Addestramento iniziale dei soli strati finali, mantenendo congelati gli altri.
+    \item Successivo addestramento dell'intera rete.
+\end{itemize}
+
+\subsection{Fine-Tuning di MobileNetV2 - versione 1}
+\label{chap:mobilenetv2_ft_v1}
+
+Nella prima versione il modello è stato addestrato direttamente sulle immagini originali del dataset ``Gaze Direction Detection''.  
+
+\textbf{Accuracy sul test set}: 74.0\%.  
+
+La matrice di confusione è riportata in \Cref{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}.  
+
+Per integrare il modello in OFIQ,  è stato esportato in formato ONNX e affiancato da una pipeline di preprocessing delle immagini, così strutturata:
+\begin{itemize}
+    \item Costruzione di un bounding box attorno ai landmark dell'occhio rilevati da ADNet.
+    \item Individuazione del lato maggiore del bounding box e moltiplicazione per un fattore di scala (2.5).
+    \item Ricostruzione del bounding box mantenendo l'occhio al centro.
+    \item Ridimensionamento dell'immagine a \(224 \times 224\), dimensione richiesta da MobileNetV2.
+    \item Inferenza tramite il modello, che restituisce due valori: probabilità di sguardo frontale (tensore 0) e probabilità contraria (tensore 1).
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\linewidth]{figures/fine-tuning-mobilenetv2-version-1-confusion-matrix.png}
+    \caption{Matrice di confusione del Fine-Tuning di MobileNetV2, versione 1}
+    \label{fig:fine_tuning_mobilenetv2_version_1_confusion_matrix}
+\end{figure}
+
+\subsection{Fine-Tuning di MobileNetV2 - versione 2}
+\label{chap:mobilenetv2_ft_v2}
+
+Poiché la versione 1 mostrava buoni risultati sul test set ma scarsa capacità di generalizzazione su dataset differenti, nella versione 2 si è intervenuti sul preprocessing, facendo in modo che il modello valutasse esclusivamente l'occhio.  
+
+Il preprocessing adottato è il seguente:
+\begin{itemize}
+    \item Rilevamento degli occhi tramite classificatore HaarCascade di OpenCV.
+    \item Ritaglio del bounding box dell'occhio.
+    \item Ridimensionamento a \(96 \times 96\).
+    \item Aggiunta di un bordo nero fino a raggiungere \(224 \times 224\), così da preservare le proporzioni senza introdurre rumore eccessivo.
+\end{itemize}
+
+\textbf{Accuracy sul test set}: 78.4\%.  
+
+La matrice di confusione è riportata in \Cref{fig:fine_tuning_mobilenetv2_version_2_confusion_matrix}.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\linewidth]{figures/fine-tuning-mobilenetv2-version-2-confusion-matrix.png}
+    \caption{Matrice di confusione del Fine-Tuning di MobileNetV2, versione 2}
+    \label{fig:fine_tuning_mobilenetv2_version_2_confusion_matrix}
+\end{figure}
+
+\section{Costruzione di un modello CNN \texttt{gdd CNN}}
+\label{chap:build_cnn_model}
+
+Per ridurre l'impatto del rumore dovuto al ridimensionamento e a particolari tecniche di preprocessing, è stato implementato un modello CNN da zero, accettando in input immagini di dimensione \(96 \times 96\).  
+
+La struttura del modello, illustrata in \Cref{fig:custom_CNN_architecture}, comprende 4 blocchi alternati di convoluzione e max pooling, fino a ottenere una dimensione di \(6 \times 6 \times 256\). Segue una rete fully connected con 512 nodi, un layer di dropout e infine il layer di output con 2 classi e funzione di attivazione \texttt{softmax}.  
+
+Addestramento:
+\begin{itemize}
+    \item Ottimizzatore: \texttt{Adam}.
+    \item Funzione di loss: \texttt{sparse\_categorical\_crossentropy}.
+    \item Early stopping.
+\end{itemize}
+
+Il modello è stato addestrato sul dataset ``Gaze Direction Detection'' e successivamente convertito in formato ONNX per l'integrazione in OFIQ.  
+
+Pipeline di preprocessing:
+\begin{itemize}
+    \item Rilevamento dell'occhio con HaarCascade di OpenCV.
+    \item Ritaglio del bounding box dell'occhio;
+    \item Ridimensionamento a \(96 \times 96\).
+\end{itemize}
+
+\textbf{Accuracy sul test set}: 85.0\%.  
+
+La matrice di confusione è riportata in \Cref{fig:custom_cnn_confusion_matrix}.  
+
+Il modello è stato denominato \texttt{gdd CNN} (\texttt{Gaze Direction Detector CNN}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\linewidth]{figures/custom-cnn-confusion-matrix.png}
+    \caption{Matrice di confusione del modello CNN sviluppato da zero}
+    \label{fig:custom_cnn_confusion_matrix}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.2\linewidth]{figures/custom-CNN-architecture}
+    \caption{Architettura della CNN implementata}
+    \label{fig:custom_CNN_architecture}
+\end{figure}
+
+\section{Modelli di machine learning basati sui landmark facciali}
+\label{chap:landmark_based_model}
+
+Per affrontare i problemi di generalizzazione emersi nei modelli CNN, è stata sviluppata una soluzione basata sull'estrazione dei landmark facciali e sul loro utilizzo come input per modelli di machine learning.  
+
+Struttura generale:
+\begin{itemize}
+    \item \textbf{Estrattore di landmark}: due approcci testati
+    \begin{itemize}
+        \item \textbf{MediaPipe Face Mesh} (20 landmark per occhio, comprensivi dell'iride, Paper~\cite{48292}).
+        \item \textbf{ADNet} (9 landmark per occhio).
+    \end{itemize}
+    \item \textbf{DataFrame pandas}: per la gestione dei landmark.
+    \item \textbf{Modello predittivo}: 
+    \begin{itemize}
+        \item \textbf{XGBoost}.
+        \item Rete neurale fully connected in Keras (input layer con un neurone per colonna, hidden layer da 128 neuroni, output layer con un neurone e attivazione \texttt{sigmoid}).
+    \end{itemize}
+\end{itemize}
+
+L'addestramento ha utilizzato la tecnica della \textit{K-Fold Cross Validation}, con landmark normalizzati per favorire la generalizzazione.  
+
+Dataset:
+\begin{itemize}
+    \item \textbf{ONOT}: immagini con sguardo in camera;
+    \item \textbf{TONO}: immagini con sguardo non in camera;
+\end{itemize}
+per un totale di circa 1.000 immagini.  
+
+Il dataset ``Gaze Direction Detection'' non è stato utilizzato poiché non includeva il volto completo, necessario agli estrattori di landmark. I modelli sono stati inoltre testati su un sotto-dataset di immagini reali fornite da Biolab, tutte con sguardo frontale.
+
+\subsection{Risultati dei modelli basati su landmark}
+
+\begin{itemize}
+    \item \textbf{MediaPipe Face Mesh + XGBoost}  
+    Accuracy: 77.0\%,  Equal Error Rate: 26.5\%,  Accuracy Biolab: 63.2\%.  
+    Matrice di confusione: \Cref{fig:mediapipe_xgboost_confusion_matrix}.
+    
+    \item \textbf{MediaPipe Face Mesh + Keras}  
+    Accuracy: 64.0\%,  Equal Error Rate: 50.0\%,  Accuracy Biolab: 0.0\%.  
+    Matrice di confusione: \Cref{fig:mediapipe_keras_confusion_matrix}.
+    
+    \item \textbf{ADNet + XGBoost}  
+    Accuracy: 64.3\%,  Equal Error Rate: 43.1\%,  Accuracy Biolab: 12.1\%.  
+    Matrice di confusione: \Cref{fig:adnet_xgboost_confusion_matrix}.
+    
+    \item \textbf{ADNet + Keras}  
+    Accuracy: 69.5\%,  Equal Error Rate: 50.0\%,  Accuracy Biolab: 0.0\%.  
+    Matrice di confusione: \Cref{fig:adnet_keras_confusion_matrix}.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/mediapipe_xgboost_confusion_matrix.png}
+        \caption{MediaPipe + XGBoost}
+        \label{fig:mediapipe_xgboost_confusion_matrix}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/mediapipe_keras_confusion_matrix.png}
+        \caption{MediaPipe + Keras}
+        \label{fig:mediapipe_keras_confusion_matrix}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/adnet_xgboost_confusion_matrix.png}
+        \caption{ADNet + XGBoost}
+        \label{fig:adnet_xgboost_confusion_matrix}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/adnet_keras_confusion_matrix.png}
+        \caption{ADNet + Keras}
+        \label{fig:adnet_keras_confusion_matrix}
+    \end{subfigure}
+    \caption{Matrici di confusione dei modelli basati su landmark facciali}
+\end{figure}
+
+
 
 \chapter{Strumenti utilizzati per lo sviluppo delle metriche}
 
@@ -421,11 +640,24 @@ I test vengono condotti su diversi dataset e metriche note.
 Il linguaggio di programmazione Python ed il framework PyTorch sono comunemente utilizzati per l'addestramento e la distribuzione di modelli di Machine Learning. 
 Nel progetto il loro impiego riguarda principalmente il testing e la conversione in formato Onnx del modello L2CS-Net, originariamente distribuito in PyTorch.
 In particolare, è stato utilizzato il modulo \texttt{ONNX exporter API}, che consente di esportare un modello PyTorch in formato Onnx, impiegato per la conversione di L2CS-Net tramite il seguente codice: \cref{lst:onnx-exporter}
-
 \lstinputlisting[float,language=Python,label={lst:onnx-exporter}]{listings/onnx_exporter.py}
 
+\section{Libreria Keras}
+Keras è una libreria open-source di alto livello per il \textit{deep learning}, scritta in Python e basata sul motore di calcolo TensorFlow.  
+Nel presente lavoro, Keras è stata utilizzata per:
+\begin{itemize}
+    \item Eseguire il Fine-Tuning di MobileNetV2 (Sezione~\ref{chap:mobilenetv2_ft}).
+    \item Sviluppare la rete CNN descritta nella Sezione~\ref{chap:build_cnn_model}.
+    \item Implementare la rete neurale fully connected basata sui landmark (Sezione~\ref{chap:landmark_based_model}).
+\end{itemize}
+
+\section{Libreria XGBoost}
+La libreria \texttt{XGBoost} (\textit{eXtreme Gradient Boosting}) \cite{xgboost} mette a disposizione il modulo \texttt{XGBoostClassifier}, che consente di utilizzare modelli basati su alberi decisionali ottimizzati tramite l'algoritmo del Gradient Boosting per la risoluzione di problemi di classificazione.  
+In questo lavoro, XGBoost è stato impiegato per costruire due dei modelli basati sui landmark (Sezione~\ref{chap:landmark_based_model}).
+
+
 \section{Jupyter Notebook, Numpy e Matplotlib}
-Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab.
+Jupyter Notebook, Numpy e Matplotlib sono stati utilizzati per creare documenti interattivi e rappresentare graficamente (tramite boxplot e istogrammi) le performance delle metriche di valutazione sui dataset ONOT, TONO e su un sottoinsieme di Biolab (un dataset con immagini di volti reali etichettati).
 Il linguaggio Python è stato inoltre impiegato per:
 \begin{itemize}
     \item suddividere i dataset in base ai file di riferimento in formato \texttt{.txt};
@@ -528,7 +760,7 @@ Dopo un'attenta analisi del protocollo richiesto dalla piattaforma FVC-Ongoing, 
 
 \subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione HSV)}
 La valutazione della metrica per il difetto degli occhi rossi è divisa in due parti. 
-Nella prima parte vengono analizzati i risultati ottenuti tramite l'algoritmo basato sullo spazio colore HSV, mentre nella seconda parte si utilizza lo spazio colore yCbCr. \\[4pt]
+Nella prima parte vengono analizzati i risultati ottenuti tramite l'algoritmo basato sullo spazio colore HSV, mentre nella seconda parte si utilizza lo spazio colore yCbCr. \\
 \texttt{Equal Error Rate}: 18.1\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_hsv}. 
 
@@ -540,9 +772,10 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione yCbCr)}
-La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\[4pt]
-\texttt{Equal Error Rate}: 14.6\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr}.
+La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\
+\texttt{Equal Error Rate} (versione con esclusione della pupilla dal calcolo dei pixel dell'iride): 17.1\%. \\
+\texttt{Equal Error Rate} (versione senza esclusione della pupilla dal calcolo dei pixel dell'iride): 14.6\%. \\
+La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr} (questa distribuzione è relativa alla versione senza l'esclusione della pupilla dal calcolo dei pixel dell'iride).
 
 \begin{figure}
     \centering
@@ -552,7 +785,7 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
-I risultati ottenuti tramite il metodo algoritmico rientrano nella media degli algoritmi pubblicati sulla piattaforma. \\[4pt]
+I risultati ottenuti tramite il metodo algoritmico rientrano nella media degli algoritmi pubblicati sulla piattaforma. \\
 \texttt{Equal Error Rate}: 17.1\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_algo}.
 
@@ -564,8 +797,7 @@ La distribuzione degli score è riportata nel grafico \Cref{fig:score_distributi
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
-L'utilizzo della CNN L2CS-Net, in grado di predire l'angolatura dello sguardo, si è rivelato meno efficace del metodo algoritmico. \\[4pt]
-\texttt{Equal Error Rate}: 36.0\%. \\
+\texttt{Equal Error Rate}: 12.9\%. \\
 La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_l2cs}.
 
 \begin{figure}
@@ -600,6 +832,7 @@ La valutazione delle metriche sui dataset ONOT e TONO è stata condotta secondo 
 \end{enumerate}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
+\label{chap:evalutazione_frontal_gaze_algo}
 Il dataset TONO contiene due cartelle con immagini relative al difetto dello sguardo frontale:
 \begin{itemize}
     \item \textit{la\_1}: immagini di volti con lo sguardo rivolto verso destra;
@@ -616,37 +849,41 @@ BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo}. \\
 Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo}. \\
 BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo}. 
 
-% Figures L1
-\begin{figure}
+
+\begin{figure}[htbp]
     \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
     \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-algo.png}
     \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_1) e ONOT}
     \label{fig:score_distribution_tono_onot_l1_frontal_gaze_algo}
-\end{figure}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-algo.png}
+        \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_1) e ONOT}
+        \label{fig:box_plot_tono_onot_l1_frontal_gaze_algo}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-algo.png}
+        \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_2) e ONOT}
+        \label{fig:score_distribution_tono_onot_l2_frontal_gaze_algo}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-algo.png}
+        \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_2) e ONOT}
+        \label{fig:box_plot_tono_onot_l2_frontal_gaze_algo}
+    \end{subfigure}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-algo.png}
-    \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_1) e ONOT}
-    \label{fig:box_plot_tono_onot_l1_frontal_gaze_algo}
-\end{figure}
-
-% Figures L2
-\begin{figure}
-    \centering
-    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-algo.png}
-    \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_2) e ONOT}
-    \label{fig:score_distribution_tono_onot_l2_frontal_gaze_algo}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-algo.png}
-    \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo algoritmico), dataset TONO (cartella la\_2) e ONOT}
-    \label{fig:box_plot_tono_onot_l2_frontal_gaze_algo}
+    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo algoritmico)}
 \end{figure}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
+\label{chap:evaluatoin_l2csnet}
 Come introdotto in precedenza, i risultati sono riportati separatamente per le cartelle \textit{la\_1} e \textit{la\_2}.
 
 \noindent Risultati per la cartella \textit{la\_1}: \\
@@ -655,48 +892,250 @@ Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaz
 BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}. \\
 
 \noindent Risultati per la cartella \textit{la\_2}: \\
-\texttt{Equal Error Rate}: 29.7\%. \\
+\texttt{Equal Error Rate}: 18.6\%. \\
 Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}. \\
 BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}. 
 
-% Figures L1
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-l2cs.png}
-    \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_1) e ONOT}
-    \label{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l1-frontal-gaze-l2cs.png}
+        \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_1) e ONOT}
+        \label{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-l2cs.png}
+        \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_1) e ONOT}
+        \label{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-l2cs.png}
+        \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_2) e ONOT}
+        \label{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-l2cs.png}
+        \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_2) e ONOT}
+        \label{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}
+    \end{subfigure}
+
+    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo L2CS-Net)}
 \end{figure}
 
-\begin{figure}
+\subsection{Valutazione dei modelli di machine learning sviluppati}
+Di seguito sono riportati i valori di Equal Error Rate (EER) e la distribuzione degli score sui dataset TONO e ONOT per i modelli ottenuti tramite \textit{Fine-Tuning} di MobileNetV2 e per la CNN sviluppata da zero.
+
+\paragraph{Versione 1, Fine-Tuning di MobileNetV2 sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:mobilenetv2_ft_v1})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 47.3\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 58.5\% , Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la2}
+\end{itemize}
+
+\paragraph{Versione 2, Fine-Tuning di MobileNetV2 sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:mobilenetv2_ft_v2})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 46.9\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 58.0\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la2}
+\end{itemize}
+
+\paragraph{\texttt{gdd CNN}, Modello CNN sviluppato sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:build_cnn_model})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 38.4\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 21.8\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la2}
+\end{itemize}
+
+\medskip
+Non sono state riportate le metriche su TONO e ONOT per i modelli basati sui landmark (Sezione~\ref{chap:landmark_based_model}), in quanto tali modelli sono stati addestrati direttamente su questi dataset. Per essi sono pertanto sufficienti le metriche calcolate sul test set.
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l1-frontal-gaze-l2cs.png}
-    \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_1) e ONOT}
-    \label{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la1.png}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v1_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la2.png}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v1_la2}
+    \end{subfigure}
+    \caption{Distribuzione degli score per MobileNetV2 versione 1 su TONO e ONOT}
 \end{figure}
 
-% Figures L2
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=.7\linewidth]{figures/score-distribution-tono-onot-l2-frontal-gaze-l2cs.png}
-    \caption{Distribuzione degli score per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_2) e ONOT}
-    \label{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la1.png}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v2_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la2.png}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v2_la2}
+    \end{subfigure}
+    \caption{Distribuzione degli score per MobileNetV2 versione 2 su TONO e ONOT}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=.7\linewidth]{figures/box-plot-tono-onot-l2-frontal-gaze-l2cs.png}
-    \caption{BoxPlot comparativo per il rilevamento dello sguardo frontale (metodo L2CS-Net), dataset TONO (cartella la\_2) e ONOT}
-    \label{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la1.png}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v3_la1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la2.png}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
+        \label{fig:score_distribution_frontal_gaze_gdd_v3_la2}
+    \end{subfigure}
+    \caption{Distribuzione degli score per il modello \texttt{gdd CNN} su TONO e ONOT}
 \end{figure}
+
 
 \chapter{Analisi dei risultati}
+
 \section{Rilevamento del difetto degli occhi rossi}
+Nella valutazione della metrica per il rilevamento degli occhi rossi si è osservato un miglioramento delle performance utilizzando lo spazio colore YCbCr rispetto a quello HSV.  
+Ciò è dovuto principalmente a due fattori:
+\begin{itemize}
+    \item Il canale \texttt{Cr} assume valori elevati in presenza del colore rosso, favorendone l'isolamento.
+    \item L'informazione di luminanza è separata dagli altri componenti, rendendo il filtro più robusto alle variazioni di luce e ombra.
+\end{itemize}
+
+Un ulteriore incremento delle performance è stato ottenuto considerando anche i pixel della pupilla nel calcolo dei pixel totali dell'iride. Infatti, in alcuni casi il landmark non risultava correttamente centrato nella pupilla, con il rischio di escludere pixel significativi dal conteggio.
+
+Un fattore che potrebbe aver influito sull'\textit{Equal Error Rate} (EER), pari al 14\%, è la presenza nel dataset di immagini con difetti diversi dagli occhi rossi, ma classificate come prive del difetto in questione. In questi casi, l'algoritmo ha attribuito valori di score bassi (ad esempio 51 e 66), come mostrato in \Cref{fig:red_eye_false_negative_images}. Tali errori derivano da un'errata saturazione dell'immagine, difetto rilevabile tramite altre metriche implementate in OFIQ.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/red_eye_false_negative_image_1.png}
+        \caption{Score: 51}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/red_eye_false_negative_image_2.png}
+        \caption{Score: 66}
+    \end{subfigure}
+    \caption{Esempi di falsi positivi nella metrica di rilevamento degli occhi rossi (dataset Biolab).}
+    \label{fig:red_eye_false_negative_images}
+\end{figure}
+
+\section{Rilevamento del difetto dello sguardo frontale}
+
+\subsection{Versione algoritmica}
+Le migliori prestazioni del metodo algoritmico sono state ottenute su immagini generate artificialmente e prive di altri difetti (dataset TONO e ONOT). Al contrario, su immagini reali (es. FVC-Ongoing) le performance risultano inferiori.  
+
+Le principali criticità del metodo includono:
+\begin{itemize}
+    \item proporzioni non corrette nei rapporti tra le distanze di specifici landmark oculari (esempi in \Cref{fig:frontal_gaze_algo_weakness});
+    \item dipendenza dalla precisione del modello di rilevamento dei landmark: in presenza di riflessi vicino agli occhi, i landmark risultano talvolta disallineati di alcuni pixel, con conseguente calo degli score;
+    \item presenza di difetti non direttamente correlati allo sguardo, come pose non frontali del viso, con conseguente calo degli score.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-94-1.png}
+        \caption{Falso negativo, score: 94}
+        \label{fig:frontal_gaze_algo_weakness_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-80-2.png}
+        \caption{Falso negativo, score: 80}
+        \label{fig:frontal_gaze_algo_weakness_2}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-0-3.png}
+        \caption{Falso negativo, score: 0}
+        \label{fig:frontal_gaze_algo_weakness_3}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-positive-98-1.png}
+        \caption{Falso positivo, score: 98}
+        \label{fig:frontal_gaze_algo_weakness_4}
+    \end{subfigure}
+    \caption{Esempi di falsi positivi e falsi negativi nel rilevamento dello sguardo frontale con metodo algoritmico.}
+    \label{fig:frontal_gaze_algo_weakness}
+\end{figure}
+
+\subsection{Versione con l'utilizzo del modello L2CS-Net}
+Il metodo basato su L2CS-Net ha ottenuto i migliori risultati tra i modelli valutati, classificandosi al secondo posto tra i risultati pubblicati sulla piattaforma FVC-Ongoing. Nonostante ciò, gli score ottenuti sono ulteriormente migliorabili.  
+
+Un aspetto rilevante riguarda la pipeline di preprocessing, il modello L2CS-Net si aspetta come input un volto rilevato dal modello \textit{RetinaFace} (libreria python \texttt{face\_detection}), mentre per le valutazioni in OFIQ è stato utilizzato un diverso face detector in formato ONNX già integrato. In un caso specifico (\Cref{fig:frontal_gaze_l2cs_false_negative}), la stima dell'angolo yaw differisce in modo significativo (\texttt{0.03} radianti con \textit{RetinaFace} contro \texttt{0.27} radianti con il detector interno). Tuttavia, nella media delle immagini la differenza supera raramente \texttt{0.03} radianti.
+
+Inoltre, come mostrato in \Cref{fig:frontal_gaze_l2cs_weakness}, esistono casi in cui il modello assegna score migliori a un'immagine generata da AI con sguardo laterale (\Cref{fig:frontal_gaze_l2cs_false_positive}) rispetto a una reale con sguardo frontale (\Cref{fig:frontal_gaze_l2cs_false_negative}). 
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-positive-97-1.png}
+        \caption{Falso positivo, angolo pitch: 0.02}
+        \label{fig:frontal_gaze_l2cs_false_positive}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-negative-65-1.png}
+        \caption{Falso negativo, angolo pitch: 0.05}
+        \label{fig:frontal_gaze_l2cs_false_negative}
+    \end{subfigure}
+    \caption{Esempi di falsi positivi e falsi negativi nel rilevamento dello sguardo frontale con L2CS-Net.}
+    \label{fig:frontal_gaze_l2cs_weakness}
+\end{figure}
+
+\subsection{Versione con modelli di machine learning}
+I modelli descritti nel Chapter~\ref{chap:frontal_gaze_with_ml} mostrano significative difficoltà di generalizzazione: sebbene ottengano punteggi elevati sul test-set, come nel caso della CNN gdd che raggiunge un'accuratezza dell'85\%, le prestazioni calano drasticamente quando vengono valutati su dataset differenti. In particolare, i modelli ottenuti tramite Fine Tuning di MobileNetV2, testati sui dataset Tono e Onot, presentano equal error rate compresi tra il 46\% e il 58\%, rendendoli poco affidabili. Anche sul sottodataset Biolab, composto esclusivamente da immagini reali e compliance, le performance non migliorano, con un'accuratezza che si attesta intorno al 40\%.
+
+La CNN \texttt{gdd} ottiene performance migliori con EER compresi tra il 21\% e il 38\% su TONO e ONOT, e un'accuracy di circa il 66\% su Biolab. Tuttavia, anche questo modello risulta inferiore ai metodi algoritmico (\ref{chap:evalutazione_frontal_gaze_algo}) e L2CS-Net (\ref{chap:evaluatoin_l2csnet}).  
+
+Per quanto riguarda i modelli basati sui landmark facciali, le performance non sono attualmente affidabili. Va però evidenziato che il training è stato effettuato interamente su dati sintetici, con dataset ridotto (\(\sim1000\) immagini totali, divise in 80\% training e 20\% test) e sbilanciato (2 immagini non frontali ogni immagine frontale).
+Dai test condotti si può notare che:
+\begin{itemize}
+    \item i modelli che utilizzano Mediapipe come estrattore di landmark mostrano score e capacità di generalizzazione migliori rispetto ad altri approcci;
+    \item i modelli basati su XGBoost hanno ottenuto EER più bassi e una generalizzazione migliore rispetto alle reti neurali fully connected sviluppate con Keras.
+\end{itemize}
+
+\chapter{Conclusioni}
+Le valutazioni condotte sul software OFIQ e la relativa analisi dei risultati hanno confermato la solidità delle metriche già implementate nel software e nel draft ISO 29794-5. Sebbene i parametri considerati in OFIQ non coincidano pienamente con quelli previsti dallo standard ICAO, nelle metriche comuni il software ha dimostrato buone prestazioni sia su TONO e ONOT che su FVC Ongoing, mantenendo valori di Equal Error Rate sempre inferiori al 10\%.  
+
+L'obiettivo di questa tesi è stato l'implementazione di due metriche non ancora presenti in OFIQ: il rilevamento del difetto degli occhi rossi e quello dello sguardo frontale. Nel primo caso, oltre a proporre un metodo algoritmico efficace, è stato dimostrato come l'utilizzo dello spazio colore YCbCr permetta di isolare la componente rossa con maggiore precisione rispetto allo spazio HSV, grazie alla separazione tra luminanza e crominanza che rende il filtro meno sensibile alle variazioni di illuminazione.  
+
+Per quanto riguarda lo sguardo frontale, la metrica era menzionata nel draft ISO ma non era stata implementata né resa operativa, rimanendo una proposta per edizioni future dello standard. Il lavoro è iniziato sviluppando l'approccio algoritmico suggerito, valutandolo sia su FVC Ongoing che sui dataset TONO e ONOT. Successivamente la ricerca si è concentrata sull'esplorazione di soluzioni alternative in grado di migliorare le prestazioni, obiettivo raggiunto attraverso l'impiego del modello L2CS-Net, che ha ottenuto risultati competitivi su FVC Ongoing. Nonostante questi progressi, il metodo risulta ulteriormente migliorabile sfruttando \texttt{RetinaFace} per il rilevamento della bounding box facciale da utilizzare come input del modello.  
+
+Parallelamente, sono stati progettati e sperimentati ulteriori approcci basati sullo sviluppo di modelli di machine learning. Tra questi, la rete neurale \texttt{gdd CNN} ha mostrato le migliori prestazioni, evidenziando come l'adattamento del modello al contesto specifico possa incidere in maniera significativa sui risultati. L'elaborazione di immagini a dimensioni ridotte rispetto a MobileNetV2 ha ridotto il rumore nei dati, contribuendo al miglioramento delle predizioni. Tuttavia, i test cross-dataset hanno messo in luce problemi di generalizzazione, che potranno essere affrontati con l'impiego di dataset più ampi ed eterogenei. 
+Un ulteriore contributo della ricerca è stato lo sviluppo di modelli basati sui landmark facciali. L'integrazione di MediaPipe Face Mesh con XGBoost ha prodotto buoni risultati, considerando che l'addestramento è stato condotto su un dataset ridotto, non bilanciato e composto totalmente da immagini generate artificialmente. L'ampliamento del dataset potrebbe contribuire nel miglioramento delle prestazioni e della capacità di generalizzazione. Inoltre, l'accuratezza dei landmark estratti da MediaPipe suggerisce possibili applicazioni per il miglioramento del metodo algoritmico proposto nello standard ISO 29794-5.  
+
+In conclusione, il lavoro svolto ha proposto un approccio più efficace rispetto a quello suggerito nel draft ISO 29794-5 per il rilevamento dello sguardo frontale, individuando anche diversi spunti per migliorare ulteriormente le metriche sviluppate.
 
 
-\chapter{Contribution}
-
-
-\section{Fancy formulas here}
 
 %----------------------------------------------------------------------------------------
 % BIBLIOGRAPHY
@@ -704,15 +1143,9 @@ BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}.
 
 \backmatter
 
-\nocite{*} % Remove this as soon as you have the first citation
-
 \bibliographystyle{alpha}
 \bibliography{bibliography}
 
 
-
-\begin{acknowledgements} % this is optional
-Optional. Max 1 page.
-\end{acknowledgements}
 
 \end{document}

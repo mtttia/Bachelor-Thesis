@@ -1004,8 +1004,19 @@ Non sono state riportate le metriche su TONO e ONOT per i modelli basati sui lan
 
 
 \chapter{Analisi dei risultati}
+
 \section{Rilevamento del difetto degli occhi rossi}
-Nella metrica del rilevamento degli occhi rossi si è riscontrato un miglioramento delle performance nella versione che prevede l'utilizzo dello spazio colore YCBCR rispetto a quella con l'utilizzo dello spazio colore HSV, questo è dato dal fatto che il canale CR assume valori molto alti in presenza del colore rosso favorendone l'isolamento, inoltre l'informazione di luminanza è separata rispetto agli altri componenti rendendo il filtro più robusto a variazioni di luce/ombra. Si è inoltre analizzato che la non esclusione dei pixel della pupilla dal calcolo dei pixel totali dell'iride ha portato un ulteriore miglioramento delle performance, questo dovuto probabilmente dal fatto che il landmark non fosse correttamente centrato nella pupilla in alcuni casi portando ad escludere pixel utili alla conta dei pixel rossi totali. Un fattore che può aver inciso sull'equal error rate al 14\% può essere la sottomissione all'algoritmo di immagini riportanti difetti diversi da quello degli occhi rossi in immagini classficate con assenza di occhi rossi, come dimostrato dalle immagini \Cref{fig:red_eye_false_negative_images} che riportano score al 51 e 66 per colpa dell'errata saturazione dell'immagine, difetto riscontrabile da altre metiche implementate nel software OFIQ.
+Nella valutazione della metrica per il rilevamento degli occhi rossi si è osservato un miglioramento delle performance utilizzando lo spazio colore YCbCr rispetto a quello HSV.  
+Ciò è dovuto principalmente a due fattori:
+\begin{itemize}
+    \item Il canale \texttt{Cr} assume valori elevati in presenza del colore rosso, favorendone l'isolamento.
+    \item L'informazione di luminanza è separata dagli altri componenti, rendendo il filtro più robusto alle variazioni di luce e ombra.
+\end{itemize}
+
+Un ulteriore incremento delle performance è stato ottenuto considerando anche i pixel della pupilla nel calcolo dei pixel totali dell'iride. Infatti, in alcuni casi il landmark non risultava correttamente centrato nella pupilla, con il rischio di escludere pixel significativi dal conteggio.
+
+Un fattore che potrebbe aver influito sull'\textit{Equal Error Rate} (EER), pari al 14\%, è la presenza nel dataset di immagini con difetti diversi dagli occhi rossi, ma classificate come prive del difetto in questione. In questi casi, l'algoritmo ha attribuito valori di score bassi (ad esempio 51 e 66), come mostrato in \Cref{fig:red_eye_false_negative_images}. Tali errori derivano da un'errata saturazione dell'immagine, difetto rilevabile tramite altre metriche implementate in OFIQ.
+
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.49\textwidth}
@@ -1019,73 +1030,89 @@ Nella metrica del rilevamento degli occhi rossi si è riscontrato un miglioramen
         \includegraphics[width=.7\linewidth]{figures/red_eye_false_negative_image_2.png}
         \caption{Score: 66}
     \end{subfigure}
+    \caption{Esempi di falsi positivi nella metrica di rilevamento degli occhi rossi (dataset Biolab).}
     \label{fig:red_eye_false_negative_images}
-    \caption{Esempi di immagini false positivi alla metrica del rilevamento degli occhi rossi dal dataset Biolab}
 \end{figure}
 
 \section{Rilevamento del difetto dello sguardo frontale}
+
 \subsection{Versione algoritmica}
-Nelle valutazioni di questo metodo si può notare che le prestazioni migliori sono raggiunte su immagini generate artificialmente presentanti nessun altro difetto specifico, i casi di TONO e ONOT, e prestazioni inferiori sono invece riscontrate su immagini reali con eventuali altri difetti, come nel caso di FVC-Ongoing. Le debolezze di questo metodo includono immagini di volti nei quali i rapporti tra le distanze di punti specifi dell'occhio non sempre sono proporzionate (es. immagine classificata falsa negativi \Cref{fig:frontal_gaze_algo_weakness_3}, immagine classificata falsa negativa \Cref{fig:frontal_gaze_algo_weakness_1}, immagine classificata falsa positiva \Cref{fig:frontal_gaze_algo_weakness_4}), la dipendenza dell'algoritmo rispetto all'errore del modello che trova i landmark il quale in casi in cui sono presenti riflessi vicino o sopra gli occhi tende a trovare landmark distanti di qualche pixel rispetto a dove dovrebbero essere portando ad eventuali score minori e le immagini le quali riportano altri difetti quali una posa non frontale del viso (es. falso negativo \Cref{fig:frontal_gaze_algo_weakness_2}).
+Le migliori prestazioni del metodo algoritmico sono state ottenute su immagini generate artificialmente e prive di altri difetti (dataset TONO e ONOT). Al contrario, su immagini reali (es. FVC-Ongoing) le performance risultano inferiori.  
+
+Le principali criticità del metodo includono:
+\begin{itemize}
+    \item proporzioni non corrette nei rapporti tra le distanze di specifici landmark oculari (esempi in \Cref{fig:frontal_gaze_algo_weakness});
+    \item dipendenza dalla precisione del modello di rilevamento dei landmark: in presenza di riflessi vicino agli occhi, i landmark risultano talvolta disallineati di alcuni pixel, con conseguente calo degli score;
+    \item presenza di difetti non direttamente correlati allo sguardo, come pose non frontali del viso, con conseguente calo degli score.
+\end{itemize}
 
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-94-1.png}
-        \caption{Falso negativa, score: 94}
+        \caption{Falso negativo, score: 94}
         \label{fig:frontal_gaze_algo_weakness_1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-80-2.png}
-        \caption{Falso negativa, score: 80}
+        \caption{Falso negativo, score: 80}
         \label{fig:frontal_gaze_algo_weakness_2}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-negative-0-3.png}
-        \caption{Falso negativa, score: 0}
+        \caption{Falso negativo, score: 0}
         \label{fig:frontal_gaze_algo_weakness_3}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-algo-false-positive-98-1.png}
-        \caption{Falso positiva, score: 98}
+        \caption{Falso positivo, score: 98}
         \label{fig:frontal_gaze_algo_weakness_4}
     \end{subfigure}
+    \caption{Esempi di falsi positivi e falsi negativi nel rilevamento dello sguardo frontale con metodo algoritmico.}
     \label{fig:frontal_gaze_algo_weakness}
-    \caption{Esempi di immagini false positivi e fale negativi nella metrica del rilevamento dello sguardo frontale con metodo algoritmico}
 \end{figure}
 
 \subsection{Versione con l'utilizzo del modello L2CS-Net}
-Il metodo utilizzante il modello L2CS-Net è quello che meglio performa sulla piattaforma FVC-Ongoing piazzandosi al secondo posto tra i migliori risultati pubblicati sulla piattaforma. Nonostante ciò gli score ottenuti tramite questa metodologia sono ancora migliorabili. Un possibile miglioramento è dato dalla pipeline di preprocessing per la quale il modello l2cs si aspetta in input l'immagine di un volto rilevato dal modello \textit{RetinaFace} disponibile all'interno della libreria python ``face\_detection'', mentre per poter valutare il modello in OFIQ è stato utilizzato un altro modello di face detecting già presente in formato onnx all'interno di OFIQ.
-In particolare nell'immagine \Cref{fig:frontal_gaze_l2cs_false_negative} l2cs-net, analizzando l'angolo yaw, usando \textit{RetinaFace} viene calcolato \texttt{0.03} radianti, mentre usando il modello all'interno di OFIQ viene calcolato \texttt{0.27} radianti, nonostante ciò, questo è un caso isolato, in quanto generalmente la differenza di predizione degli angoli nella media delle immagini è raramente superiore a \texttt{0.03} radianti.
-Come possibile visualizzare nelle immagini \Cref{fig:frontal_gaze_l2cs_weakness}, esistono comunque casi in cui, sia usando \textit{RetinaFace} che usando il face detector di ONOT, il modello da score leggermente migliori ad un'immagine che sta guardando lateralmente (\Cref{fig:frontal_gaze_l2cs_false_positive})rispetto ad una che non lo sta facendo (\Cref{fig:frontal_gaze_l2cs_false_negative}), è però da segnalare che la prima immagini sia generata tramite modello di intelligienza artificiale generativa, mentre la seconda è un'immagine reale, questo evidenzia la tendenza del meteodo di dare score migliori ad immagini generate da intelligienza artificiale generativa.
+Il metodo basato su L2CS-Net ha ottenuto i migliori risultati tra i modelli valutati, classificandosi al secondo posto tra i risultati pubblicati sulla piattaforma FVC-Ongoing. Nonostante ciò, gli score ottenuti sono ulteriormente migliorabili.  
+
+Un aspetto rilevante riguarda la pipeline di preprocessing, il modello L2CS-Net si aspetta come input un volto rilevato dal modello \textit{RetinaFace} (libreria python \texttt{face\_detection}), mentre per le valutazioni in OFIQ è stato utilizzato un diverso face detector in formato ONNX già integrato. In un caso specifico (\Cref{fig:frontal_gaze_l2cs_false_negative}), la stima dell'angolo yaw differisce in modo significativo (\texttt{0.03} radianti con \textit{RetinaFace} contro \texttt{0.27} radianti con il detector interno). Tuttavia, nella media delle immagini la differenza supera raramente \texttt{0.03} radianti.
+
+Inoltre, come mostrato in \Cref{fig:frontal_gaze_l2cs_weakness}, esistono casi in cui il modello assegna score migliori a un'immagine generata da AI con sguardo laterale (\Cref{fig:frontal_gaze_l2cs_false_positive}) rispetto a una reale con sguardo frontale (\Cref{fig:frontal_gaze_l2cs_false_negative}). 
 
 \begin{figure}[htbp]
+    \centering
     \begin{subfigure}{0.49\textwidth}
-        \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-positive-97-1.png}
-        \caption{Falso negativa, angolo pitch calcolato: 0.02}
+        \caption{Falso positivo, angolo pitch: 0.02}
         \label{fig:frontal_gaze_l2cs_false_positive}
     \end{subfigure}
     \hfill
-    \centering
     \begin{subfigure}{0.49\textwidth}
-        \centering
         \includegraphics[width=.7\linewidth]{figures/frontal-gaze-l2cs-false-negative-65-1.png}
-        \caption{Falso negativa, angolo pitch calcolato: 0.05}
+        \caption{Falso negativo, angolo pitch: 0.05}
         \label{fig:frontal_gaze_l2cs_false_negative}
     \end{subfigure}
+    \caption{Esempi di falsi positivi e falsi negativi nel rilevamento dello sguardo frontale con L2CS-Net.}
     \label{fig:frontal_gaze_l2cs_weakness}
-    \caption{Esempi di immagini false positivi e fale negativi nella metrica del rilevamento dello sguardo frontale con metodo L2CS-Net}
 \end{figure}
 
-\subsection{Versione con la costruzione e il fine tuning di modelli di machine learning}
-I modelli addestrati nel Chapter~\ref{chap:frontal_gaze_with_ml} riportano nella maggior parte dei casi problemi di generalizzazione ottenendo score molto alti sul test-set, gdd CNN arriva all'85\% di accuratezza, non riescono poi ad ottenere score dello stesso livello una volta sottoposti ad altri dataset. In particolare i modelli ottenuti tramite Fine Tuning di MobileNetV2 sottoposti a Tono e Onot ottengono equal error rate che vanno dal 46 al 58 per cento rendendoli metodi inaffidabili. Inoltre anche sul sottodataset di Biolab contenente solamente immagini compliance e reali le performance non aumentano, riportando un'accuracy del \~40\%.
-Ottiene performance migliori gdd CNN con Equal Error Rate su Tono e Onot che va dal 21 al 38 per cento circa, prestazioni comunque lontane da quelle ottenute con il metodo algoritmico (\ref{chap:evalutazione_frontal_gaze_algo}) e col metodo con L2CS-Net (\ref{chap:evaluatoin_l2csnet}). Sul sottodataset di Biolab ottiene un'accuracy del \~66\%. Nonostante le performance migliori dei fine tuning di MobileNetV2 il modello non può comunque essere ritenuto affidabile mostrando anch'esso difficolta nel generalizzazione una volta sottoposto a dataset differenti da quello di training.
-I modelli basati sui landmark facciali anch'essi riportano score che li rendono attualmente non affidabili, ma è doveroso avere alcuni accorgimenti in merito, questa strategia deve essere considerata come uno spunto per l'approfondimento della tecnica. Il modello è stato addestrato con la totalità dei dati sintetici e con un dataset non bilanciato (2 immagini con sguardo non frontale ogni immagine con sguardo frontale) e di piccole dimensioni (un totale di \~1000 immagini divise in 80\% training set e 20\% test set). Questo test mette in mostra 2 cose principali, i modelli che utilizzano mediapipe come estrattore di landmark hanno anche score migliori e migliore capacità di generalizzazione, i modelli basati su XGBoost hanno equal error rate migliori di quelli basati sulla rete neurale keras e migliori capacità di generalizzazione.
+\subsection{Versione con modelli di machine learning}
+I modelli descritti nel Chapter~\ref{chap:frontal_gaze_with_ml} mostrano significative difficoltà di generalizzazione: sebbene ottengano punteggi elevati sul test-set, come nel caso della CNN gdd che raggiunge un'accuratezza dell'85\%, le prestazioni calano drasticamente quando vengono valutati su dataset differenti. In particolare, i modelli ottenuti tramite Fine Tuning di MobileNetV2, testati sui dataset Tono e Onot, presentano equal error rate compresi tra il 46\% e il 58\%, rendendoli poco affidabili. Anche sul sottodataset Biolab, composto esclusivamente da immagini reali e compliance, le performance non migliorano, con un'accuratezza che si attesta intorno al 40\%.
+
+La CNN \texttt{gdd} ottiene performance migliori con EER compresi tra il 21\% e il 38\% su TONO e ONOT, e un'accuracy di circa il 66\% su Biolab. Tuttavia, anche questo modello risulta inferiore ai metodi algoritmico (\ref{chap:evalutazione_frontal_gaze_algo}) e L2CS-Net (\ref{chap:evaluatoin_l2csnet}).  
+
+Per quanto riguarda i modelli basati sui landmark facciali, le performance non sono attualmente affidabili. Va però evidenziato che il training è stato effettuato interamente su dati sintetici, con dataset ridotto (\(\sim1000\) immagini totali, divise in 80\% training e 20\% test) e sbilanciato (2 immagini non frontali ogni immagine frontale).
+Dai test condotti si può notare che:
+\begin{itemize}
+    \item i modelli che utilizzano Mediapipe come estrattore di landmark mostrano score e capacità di generalizzazione migliori rispetto ad altri approcci;
+    \item i modelli basati su XGBoost hanno ottenuto EER più bassi e una generalizzazione migliore rispetto alle reti neurali fully connected sviluppate con Keras.
+\end{itemize}
+
 
 
 \chapter{Conclusioni}

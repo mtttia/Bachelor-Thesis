@@ -918,51 +918,52 @@ BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}.
     \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo L2CS-Net)}
 \end{figure}
 
-\subsection{Valutazioni dei modelli di machine learning sviluppati}
-Sono riportati di seguito Equal Error Rate e distribuzione degli score su TONO e ONOT dei modelli ottenuti tramite Fine Tuning di Mobile Net V2. \\
-Versione 1: Fine tune di Mobile Net V2 sul dataset ``Gaze Direction Detection'' versione 1 (\ref{chap:mobilenetv2_ft_v1}) \\
-Dataset \texttt{la\_1} di Tono: \\
-Equal Error Rate: 47.3\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la1} \\
-Dataset \texttt{la\_2} di Tono: \\
-Equal Error Rate: 58.5\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la2} \\
-\\
-Versione 2: Fine tune di MObile Net V2 sul dataset ``Gaze Direction Detection'' versione 2 (\ref{chap:mobilenetv2_ft_v2}) \\
-Dataset \texttt{la\_1} di Tono: \\
-Equal Error Rate: 46.9\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la1} \\
-Dataset \texttt{la\_2} di Tono: \\
-Equal Error Rate: 58.0\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la2} \\
-\\
-gdd CNN: Modello CNN allenato sul dataset ``Gaze Direction Detection'' (\ref{chap:build_cnn_model}) \\
-Dataset \texttt{la\_1} di Tono: \\
-Equal Error Rate: 38.4\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la1} \\
-Dataset \texttt{la\_2} di Tono: \\
-Equal Error Rate: 21.8\% \\
-Score Distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la2} \\
-\\
-Nono sono riportate le metriche su Tono e Onot riscontrate nei modelli basati sui landmark (Section~\ref{chap:landmark_based_model}) in quanto essi stessi sono stati addestrati sui dataset Tono e Onot, sono quindi sufficienti le metriche riportate sul Test set.
+\subsection{Valutazione dei modelli di machine learning sviluppati}
+Di seguito sono riportati i valori di Equal Error Rate (EER) e la distribuzione degli score sui dataset TONO e ONOT per i modelli ottenuti tramite \textit{Fine-Tuning} di MobileNetV2 e per la CNN sviluppata da zero.
+
+\paragraph{Versione 1, Fine-Tuning di MobileNetV2 sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:mobilenetv2_ft_v1})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 47.3\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 58.5\% , Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v1_la2}
+\end{itemize}
+
+\paragraph{Versione 2, Fine-Tuning di MobileNetV2 sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:mobilenetv2_ft_v2})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 46.9\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 58.0\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v2_la2}
+\end{itemize}
+
+\paragraph{\texttt{gdd CNN}, Modello CNN sviluppato sul dataset ``Gaze Direction Detection''} (Sezione~\ref{chap:build_cnn_model})
+\begin{itemize}
+    \item Dataset \texttt{la\_1} di TONO:  
+    EER = 38.4\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la1}
+    \item Dataset \texttt{la\_2} di TONO:  
+    EER = 21.8\%, Score distribution: \Cref{fig:score_distribution_frontal_gaze_gdd_v3_la2}
+\end{itemize}
+
+\medskip
+Non sono state riportate le metriche su TONO e ONOT per i modelli basati sui landmark (Sezione~\ref{chap:landmark_based_model}), in quanto tali modelli sono stati addestrati direttamente su questi dataset. Per essi sono pertanto sufficienti le metriche calcolate sul test set.
 
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la1.png}
-        \caption{Comparazione con cartella la\_1 di Tono}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v1_la1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v1-la2.png}
-        \caption{Comparazione con cartella la\_2 di Tono}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v1_la2}
     \end{subfigure}
-
-    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo Fine Tuning Mobile Net v2, versione 1) su TONO e ONOT}
+    \caption{Distribuzione degli score per MobileNetV2 versione 1 su TONO e ONOT}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -970,18 +971,17 @@ Nono sono riportate le metriche su Tono e Onot riscontrate nei modelli basati su
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la1.png}
-        \caption{Comparazione con cartella la\_1 di Tono}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v2_la1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v2-la2.png}
-        \caption{Comparazione con cartella la\_2 di Tono}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v2_la2}
     \end{subfigure}
-
-    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo Fine Tuning Mobile Net v2, versione 2) su TONO e ONOT}
+    \caption{Distribuzione degli score per MobileNetV2 versione 2 su TONO e ONOT}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -989,19 +989,19 @@ Nono sono riportate le metriche su Tono e Onot riscontrate nei modelli basati su
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la1.png}
-        \caption{Comparazione con cartella la\_1 di Tono}
+        \caption{Confronto con cartella \texttt{la\_1} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v3_la1}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
         \centering
         \includegraphics[width=.7\linewidth]{figures/score-distribution-frontal-gaze-gdd-v3-la2.png}
-        \caption{Comparazione con cartella la\_2 di Tono}
+        \caption{Confronto con cartella \texttt{la\_2} di TONO}
         \label{fig:score_distribution_frontal_gaze_gdd_v3_la2}
     \end{subfigure}
-
-    \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo modello CNN) su TONO e ONOT}
+    \caption{Distribuzione degli score per il modello \texttt{gdd CNN} su TONO e ONOT}
 \end{figure}
+
 
 \chapter{Analisi dei risultati}
 \section{Rilevamento del difetto degli occhi rossi}

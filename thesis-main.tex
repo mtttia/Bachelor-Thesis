@@ -9,6 +9,7 @@
 \usepackage{amsmath}
 \usepackage{cleveref}
 \usepackage{subcaption}
+\usepackage{booktabs}
 
 \school{\unibo}
 \programme{Corso di Laurea Triennale in Ingegneria e Scienze Informatiche}
@@ -31,7 +32,7 @@
 \frontmatter\frontispiece
 
 \begin{abstract}	
-La visione artificiale sta venendo sempre più utilizzata nel riconoscimento di un soggetto tramite immagini facciali, ambito in cui si stanno diffondendo sistemi di riconoscimento biometrico automatico.
+L'uso delle tecniche di visione artificiale per il riconoscimento delle persone tramite il volto è in costante aumento, grazie alla diffusione dei sistemi di riconoscimento biometrico automatico.
 In questi contesti, è fondamentale garantire un'acquisizione controllata e standardizzata delle immagini facciali, al fine di ridurre errori di riconoscimento e vulnerabilità a minacce come il face morphing.
 Una cattiva acquisizione può compromettere l'intero processo biometrico, esponendo il sistema a minacce quali la falsificazioni e riducendone l'affidabilità.
 Questo progetto contribuisce allo sviluppo ed alla valutazione di un software che ha l'obbiettivo di implementare un draft ISO, volto a valutare la qualità dell'acquisizione delle immagini facciali secondo diverse metriche.
@@ -80,11 +81,56 @@ Successivamente si è testata ogni singola metrica comparando diversi dataset di
 \section{Struttura della tesi}
 La tesi è organizzata come segue: 
 \begin{itemize}
-    \item \textbf{Capitoli 2 - 5}: presentazione delle metriche sviluppate, degli algoritmi implementati e dei modelli di machine learning proposti.
-    \item \textbf{Capitolo 6}: descrizione e spiegazione degli strumenti utilizzati per lo sviluppo delle metriche.
-    \item \textbf{Capitolo 7}: valutazione delle metriche sui dataset TONO e ONOT e sulla piattaforma FVC-Ongoing.
-    \item \textbf{Capitolo 8}: analisi dei risultati con approfondimento dei casi di fallimento per ciascun metodo.
+    \item \textbf{Capitolo 2}: il software OFIQ.
+    \item \textbf{Capitoli 3 - 6}: presentazione delle metriche sviluppate, degli algoritmi implementati e dei modelli di machine learning proposti.
+    \item \textbf{Capitolo 7}: descrizione e spiegazione degli strumenti utilizzati per lo sviluppo delle metriche.
+    \item \textbf{Capitolo 8}: valutazione delle metriche ed analisi dei risultati con approfondimento sui casi di fallimento.
     \item \textbf{Capitolo 9}: conclusioni con una sintesi dei risultati ottenuti e delle prospettive di miglioramento emerse dall'analisi.
+\end{itemize}
+
+\chapter{Il software OFIQ}
+Il software OFIQ, acronimo di \textit{Open Source Face Image Quality}, è il progetto open source stato dell'arte per l'implementazione delle metriche descritte nel draft dello standard ISO 29794-5.  
+È sviluppato in linguaggio C++ e dispone di file CMake che ne consentono la compilazione su sistemi Linux, Windows e macOS. Al suo interno utilizza librerie come OpenCV per la gestione delle immagini e ONNX Runtime per l'esecuzione di modelli in formato \texttt{ONNX}.  
+
+Il progetto implementa in maniera fedele tutte le metriche previste dallo standard ISO 29794-5, restituendo per ciascuna un valore grezzo e un valore normalizzato compreso tra 0 e 100, utilizzato come \textit{score} di riferimento.  
+OFIQ costituisce la base all'interno della quale, in questa tesi, sono state sviluppate ed integrate nuove metriche e algoritmi.  
+
+Il software implementa le seguenti metriche:  
+\begin{itemize}
+    \item \textbf{Quality Score}: valutazione complessiva della qualità dell'immagine tramite il modello MagFace.
+    \item \textbf{Background uniformity}: misura dell'uniformità dello sfondo.
+    \item \textbf{Illumination uniformity}: confronto dell'uniformità dell'illuminazione tra lato destro e lato sinistro del volto.
+    \item \textbf{Luminance mean}: verifica della presenza di un'illuminazione adeguata e uniforme.
+    \item \textbf{Luminance variance}: misura del livello di contrasto dell'immagine.
+    \item \textbf{Under-exposure prevention}: controllo che l'immagine non contenga un numero eccessivo di pixel sottoesposti.
+    \item \textbf{Over-exposure prevention}: controllo che l'immagine non contenga un numero eccessivo di pixel sovraesposti.
+    \item \textbf{Dynamic range}: misura della variazione di intensità luminosa nella regione del volto, assicurando che non sia né troppo scura né troppo chiara.
+    \item \textbf{Sharpness}: valutazione della nitidezza e della corretta messa a fuoco.
+    \item \textbf{No compression artifacts}: rilevamento di eventuali artefatti di compressione che possano compromettere la qualità dell'immagine.
+    \item \textbf{Natural colour}: valutazione della naturalezza del colore della pelle.
+    \item \textbf{Single face present}: verifica della presenza di un solo volto nell'immagine.
+    \item \textbf{Eyes open}: controllo che entrambi gli occhi siano naturalmente aperti.
+    \item \textbf{Mouth closed}: verifica che la bocca sia chiusa.
+    \item \textbf{Eyes visible}: controllo che pupilla e iride siano visibili in entrambi gli occhi.
+    \item \textbf{Mouth occlusion prevention}: verifica che la bocca non sia occlusa.
+    \item \textbf{Face occlusion prevention}: controllo che la regione del volto, dalla sommità del capo al mento e da orecchio a orecchio, sia completamente visibile.
+    \item \textbf{Inter-eye distance}: misura in pixel della distanza tra gli occhi.
+    \item \textbf{Head size}: valutazione della dimensione del volto per evitare immagini troppo ravvicinate o troppo distanti.
+    \item \textbf{Leftward crop of face}: controllo che il volto non risulti decentrato a sinistra.
+    \item \textbf{Rightward crop of face}: controllo che il volto non risulti decentrato a destra.
+    \item \textbf{Downward crop of face}: controllo che il volto non risulti decentrato verso il basso.
+    \item \textbf{Upward crop of face}: controllo che il volto non risulti decentrato verso l'alto.
+    \item \textbf{Pose angle yaw frontal alignment}: verifica che l'angolo \textit{yaw} sia inferiore a \(\pm 5^\circ\) rispetto al frontale.
+    \item \textbf{Pose angle pitch frontal alignment}: verifica che l'angolo \textit{pitch} sia inferiore a \(\pm 5^\circ\) rispetto al frontale.
+    \item \textbf{Pose angle roll frontal alignment}: verifica che l'angolo \textit{roll} sia inferiore a \(\pm 8^\circ\) rispetto al frontale.
+    \item \textbf{Expression neutrality}: verifica che il volto presenti un'espressione neutrale.
+    \item \textbf{No head covering}: controllo che il soggetto non indossi copricapi, come ad esempio cappelli.
+\end{itemize}
+
+OFIQ include inoltre alcune utility che consentono l'utilizzo dei seguenti modelli, disponibili in formato \texttt{ONNX}:  
+\begin{itemize}
+    \item \textbf{SSD Face Detector CNN}: modello per il rilevamento dei volti in un'immagine.
+    \item \textbf{ADNet}: modello per l'estrazione dei landmark facciali.
 \end{itemize}
 
 
@@ -113,7 +159,6 @@ I requisiti preliminari di questo task sono i landmark del viso. Il draft della 
 \end{itemize}
 
 \section{Implementazione della metrica}
-\subsection{Descrizione dell'algoritmo}
 Viene inizialmente effettuata la segmentazione dell'occhio, l'algoritmo inizia isolando l'area dell'occhio dall'immagine completa utilizzando i landmarks forniti.
 Una volta estratta la regione dell'occhio, l'algoritmo crea una maschera specifica per l'iride, escludendo sia la pupilla centrale (che appare normalmente scura) sia le aree esterne all'occhio. Questa segmentazione geometrica si basa su proporzioni anatomiche standard.
 Lo scopo dell'algoritmo è ora quello di rilevare le zone dell'iride dove sono presenti pixel rosse, per eseguire questo compito è necessario convertire l'immagine dal tradizionale spazio colori RGB ad alcuni più utili all'isolamento di determinati colori all'interno dell'immagine quali : \begin{itemize}
@@ -125,17 +170,17 @@ Nel caso dello spazio colori yCbCr viene scelta una soglia minima per il canale 
 In entrambi i casi le soglie sono state scelte in maniera sperimentale, cercando di rispettare un giosto connubio tra falsi positivi e falsi negativi.
 Infine l'algoritmo calcola il rapporto tra i pixel rossi rilevati nell'iride e l'area totale dell'iride stessa, fornendo un valore normalizzato tra 0 e 1 che quantifica l'intensità dell'effetto occhi rossi.
 La soglia di rosso è stata scelta in base ai risultati dei test, cercando di avere un giusto equilibrio tra falsi positivi e falsi negativi, come ad esempio le persone con gli occhi marrone o marrone chiaro.
-\subsection{Dati di Input}
+L'algoritmo prende in input:
 \begin{itemize}
     \item immagine: immagine digitale a colori
     \item puntiOcchio: vettore di punti che definiscono il contorno dell'occhio
     \item cornea: punto centrale della cornea
 \end{itemize}
-\subsection{Dati di Output}
+E restituisce in output:
 \begin{itemize}
     \item rapportoRosso: valore decimale tra 0 e 1 che rappresenta la proporzione di pixel rossi nell'iride
 \end{itemize}
-\subsection{Algoritmo}
+\paragraph{Algoritmo}
 \begin{enumerate}
     \item Creazione maschera occhio [Fig. eye mask] \begin{itemize}
         \item Crea una maschera nera delle dimensioni dell'immagine
@@ -154,7 +199,7 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
     \item Creazione maschera iride [Fig. iris mask] \begin{itemize}
         \item Crea maschera nera delle dimensioni della ROI
         \item Disegna cerchio bianco con raggio iride centrato sulla pupilla
-        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale (la versione HSV è stata valutata sia con che senza questo passaggio)
+        \item Disegna cerchio nero con raggio pupilla per escludere la pupilla centrale (la versione yCbCr è stata valutata sia con che senza questo passaggio)
     \end{itemize}
     \item Combinazione maschere [Fig. combined mask] \begin{itemize}
         \item Combina maschera occhio e maschera iride con operazione AND
@@ -188,12 +233,16 @@ La soglia di rosso è stata scelta in base ai risultati dei test, cercando di av
         \item Risultato: pixel rossi presenti solo nell'area dell'iride
     \end{itemize}
     \item Calcolo rapporto finale \begin{itemize}
-        \item Conta pixel rossi nell'iride
-        \item Conta pixel totali nell'area iride
-        \item Se area iride $<$ 0: rapportoRosso = pixelRossi / pixelTotaliIride
-        \item Altrimenti: rapportoRosso = 0
+        \item \(P_r\):  Numero di pixel rossi nell'iride
+        \item \(P_t\): Numero di pixel totali nell'area iride
+        \item \(R_r\): Il rapporto tra pixel rossi e pixel totali
+        \item \(A_i\): L'area dell'iride
+        \item \(R_r = \begin{cases}
+            \frac{P_r}{P_t} & \text{se } A_i > 0 \\
+             0 & \text{Altrimenti}
+        \end{cases}\)
     \end{itemize}
-    \item Ritorna rapportoRosso
+    \item Ritorna $R_r$
 \end{enumerate}
 \begin{figure}
     \centering
@@ -218,11 +267,8 @@ I requisiti preliminari di questo task sono i landmark del viso. Il draft della 
 \end{itemize}
 
 \section{Implementazione della metrica}
-
-
-\subsection{Descrizione dell'algoritmo}
 L'algoritmo analizza la direzione dello sguardo misurando la posizione delle pupille all'interno degli occhi. Per ogni occhio, calcola la larghezza totale (distanza tra gli angoli interno ed esterno) e la distanza tra la pupilla e l'angolo interno. Dividendo queste due misure ottiene un rapporto che indica dove si trova la pupilla: un valore di 0.5 significa che la pupilla è perfettamente centrata, mentre valori minori o maggiori indicano sguardo verso sinistra o destra. L'algoritmo confronta entrambi gli occhi e sceglie quello con maggiore deviazione dal centro per determinare la direzione principale dello sguardo. Infine, applica una trasformazione parabolica (con parametri alpha = -400 e beta = 100) che mappa il risultato su una scala da 0 a 100, dove valori più alti indicano maggiore deviazione dalla posizione frontale. Questo approccio permette di quantificare oggettivamente quanto una persona stia guardando lateralmente rispetto alla fotocamera.
-Una visione grafica dei rapporti sopra elencati è disponibile 
+Una visione grafica dei rapporti sopra elencati è disponibile.
 
 \begin{figure}
     \centering
@@ -230,8 +276,7 @@ Una visione grafica dei rapporti sopra elencati è disponibile
     \caption{Immagine rappresentativa dei rapporti utilizzato dall'algoritmo di stima dello sguardo frontale manuale}
     \label{fig:frontal-gaze-manual}
 \end{figure}
-
-\subsection{Dati di Input}
+L'algoritmo prende in input:
 \begin{itemize}
     \item a: coordinate x ed y dell'angolo esterno dell'occhio sinistro
     \item b: coordinate x ed y dell'angolo interno dell'occhio sinistro
@@ -240,11 +285,11 @@ Una visione grafica dei rapporti sopra elencati è disponibile
     \item e: coordinate x ed y della pupilla dell'occhio sinistro
     \item f: coordinate x ed y della pupilla dell'occhio destro
 \end{itemize}
-\subsection{Dati di Output}
+E restituisce in output:
 \begin{itemize}
     \item valoreScalare: valore numerico che rappresenta la deviazione dello sguardo da 0 a 100
 \end{itemize}
-\subsection{Algoritmo}
+\paragraph{Algoritmo}
 \begin{enumerate}
     \item Calcolo larghezza degli occhi \begin{itemize}
         \item \(larghezzaSinistra = \sqrt{(b_x - a_x)^2 + (b_y - a_y)^2}\)
@@ -302,15 +347,15 @@ Per la rilevazione della bounding box facciale, invece, è stato utilizzato il m
 
 \section{Implementazione della metrica}
 
-\subsection{Dati di Input}
+L'algoritmo prende in input:
 \begin{itemize}
     \item immagine: L'immagine del volto da valutare
 \end{itemize}
-\subsection{Dati di Output}
+E restituisce in output:
 \begin{itemize}
     \item valoreScalare: valore numerico che rappresenta la deviazione dello sguardo da 0 a 100
 \end{itemize}
-\subsection{Algoritmo}
+\paragraph{Algoritmo}
 \begin{enumerate}
     \item Calcola \(detectedFaces\) tramite il modello SSD Face Detector CNN
     \item Se \(detectedFaces.length < 1\) allora: \(valoreScalare = 0\). Fine.
@@ -483,11 +528,7 @@ Struttura generale:
         \item \textbf{ADNet} (9 landmark per occhio).
     \end{itemize}
     \item \textbf{DataFrame pandas}: per la gestione dei landmark.
-    \item \textbf{Modello predittivo}: 
-    \begin{itemize}
-        \item \textbf{XGBoost}.
-        \item Rete neurale fully connected in Keras (input layer con un neurone per colonna, hidden layer da 128 neuroni, output layer con un neurone e attivazione \texttt{sigmoid}).
-    \end{itemize}
+    \item \textbf{Modello predittivo}: \textbf{XGBoost}: Paper~\cite{xgboost}.
 \end{itemize}
 
 L'addestramento ha utilizzato la tecnica della \textit{K-Fold Cross Validation}, con landmark normalizzati per favorire la generalizzazione.  
@@ -508,17 +549,10 @@ Il dataset ``Gaze Direction Detection'' non è stato utilizzato poiché non incl
     Accuracy: 77.0\%,  Equal Error Rate: 26.5\%,  Accuracy Biolab: 63.2\%.  
     Matrice di confusione: \Cref{fig:mediapipe_xgboost_confusion_matrix}.
     
-    \item \textbf{MediaPipe Face Mesh + Keras}  
-    Accuracy: 64.0\%,  Equal Error Rate: 50.0\%,  Accuracy Biolab: 0.0\%.  
-    Matrice di confusione: \Cref{fig:mediapipe_keras_confusion_matrix}.
-    
     \item \textbf{ADNet + XGBoost}  
     Accuracy: 64.3\%,  Equal Error Rate: 43.1\%,  Accuracy Biolab: 12.1\%.  
     Matrice di confusione: \Cref{fig:adnet_xgboost_confusion_matrix}.
     
-    \item \textbf{ADNet + Keras}  
-    Accuracy: 69.5\%,  Equal Error Rate: 50.0\%,  Accuracy Biolab: 0.0\%.  
-    Matrice di confusione: \Cref{fig:adnet_keras_confusion_matrix}.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -529,25 +563,11 @@ Il dataset ``Gaze Direction Detection'' non è stato utilizzato poiché non incl
         \caption{MediaPipe + XGBoost}
         \label{fig:mediapipe_xgboost_confusion_matrix}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/mediapipe_keras_confusion_matrix.png}
-        \caption{MediaPipe + Keras}
-        \label{fig:mediapipe_keras_confusion_matrix}
-    \end{subfigure}
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{figures/adnet_xgboost_confusion_matrix.png}
         \caption{ADNet + XGBoost}
         \label{fig:adnet_xgboost_confusion_matrix}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/adnet_keras_confusion_matrix.png}
-        \caption{ADNet + Keras}
-        \label{fig:adnet_keras_confusion_matrix}
     \end{subfigure}
     \caption{Matrici di confusione dei modelli basati su landmark facciali}
 \end{figure}
@@ -555,49 +575,6 @@ Il dataset ``Gaze Direction Detection'' non è stato utilizzato poiché non incl
 
 
 \chapter{Strumenti utilizzati per lo sviluppo delle metriche}
-
-\section{Software OFIQ}
-Il software OFIQ, acronimo di \textit{Open Source Face Image Quality}, è un progetto open source sviluppato per implementare le metriche descritte nel draft dello standard ISO 29794-5.
-È scritto in linguaggio C++ e dispone di file CMake per la compilazione su sistemi Linux, Windows e macOS.
-Al suo interno utilizza librerie come OpenCV per la gestione delle immagini e OnnxRuntime per l'esecuzione dei modelli Onnx.
-Inizialmente presentava un'implementazione fedele di tutte le metriche riportate nello standard ISO 29794-5, restituendo in output un valore grezzo ed un valore normalizzato tra 0 e 100 (utile come \textit{score}) per ciascuna metrica.
-OFIQ include inoltre delle utility che permettono l'utilizzo dei seguenti modelli (in formato Onnx): 
-\begin{itemize}
-    \item SSD Face Detector CNN: modello per il rilevamento dei volti in un'immagine.
-    \item ADNet: modello per l'estrazione dei landmark facciali.
-\end{itemize}
-
-Il software implementa le seguenti metriche: 
-\begin{itemize}
-    \item Quality Score: uno score generale dell'immagine ottenuto tramite il modello MagFace.
-    \item Background uniformity: misura l'uniformità dello sfondo.
-    \item Illumination uniformity: misura l'uniformità dell'illuminazione confrontando la parte destra e sinistra del volto.
-    \item Luminance mean: verifica che l'immagine presenti un'illuminazione adeguata e uniforme.
-    \item Luminance variance: misura i contrasti nell'immagine.
-    \item Under-exposure prevention: verifica che l'immagine non contenga troppi pixel con bassa luminosità.
-    \item Over-exposure prevention: verifica che l'immagine non contenga troppi pixel con alta luminosità.
-    \item Dynamic range: misura la variazione di intensità luminosa nella regione del volto, assicurando che non sia completamente scura o chiara.
-    \item Sharpness: valuta la nitidezza dell'immagine (corretta messa a fuoco).
-    \item No compression artifacts: valuta la presenza di artefatti di compressione, assicurando che l'immagine non sia stata eccessivamente compressa.
-    \item Natural colour: valuta la naturalezza del colore della pelle.
-    \item Single face present: verifica la presenza di un singolo volto.
-    \item Eyes open: controlla che entrambi gli occhi siano aperti in modo naturale.
-    \item Mouth closed: verifica che la bocca sia chiusa.
-    \item Eyes visible: verifica che siano visibili pupilla e iride in entrambi gli occhi.
-    \item Mouth occlusion prevention: controlla che la bocca non sia occlusa.
-    \item Face occlusion prevention: verifica che la regione del volto (dalla sommità del capo al mento e da orecchio a orecchio) sia chiaramente visibile.
-    \item Inter-eye distance: misura in pixel la distanza tra gli occhi.
-    \item Head size: valuta la dimensione del volto per evitare immagini troppo ravvicinate.
-    \item Leftward crop of face: verifica che il volto non sia decentrato a sinistra.
-    \item Rightward crop of face: verifica che il volto non sia decentrato a destra.
-    \item Downward crop of face: verifica che il volto non sia decentrato in basso.
-    \item Upward crop of face: verifica che il volto non sia decentrato in alto.
-    \item Pose angle yaw frontal alignment: verifica che l'angolo \textit{yaw} del volto sia inferiore a \(\pm 5^\circ\) dal frontale.
-    \item Pose angle pitch frontal alignment: verifica che l'angolo \textit{pitch} del volto sia inferiore a \(\pm 5^\circ\) dal frontale.
-    \item Pose angle roll frontal alignment: verifica che l'angolo \textit{roll} del volto sia inferiore a \(\pm 8^\circ\) dal frontale.
-    \item Expression neutrality: verifica che il volto presenti un'espressione neutrale.
-    \item No head covering: verifica che il soggetto non indossi copricapi (ad esempio un cappello).
-\end{itemize}
 
 \section{Dataset utilizzati per la valutazione}
 I seguenti dataset sono stati utilizzati per la valutazione delle metriche implementate.
@@ -648,7 +625,6 @@ Nel presente lavoro, Keras è stata utilizzata per:
 \begin{itemize}
     \item Eseguire il Fine-Tuning di MobileNetV2 (Sezione~\ref{chap:mobilenetv2_ft}).
     \item Sviluppare la rete CNN descritta nella Sezione~\ref{chap:build_cnn_model}.
-    \item Implementare la rete neurale fully connected basata sui landmark (Sezione~\ref{chap:landmark_based_model}).
 \end{itemize}
 
 \section{Libreria XGBoost}
@@ -665,8 +641,6 @@ Il linguaggio Python è stato inoltre impiegato per:
 \end{itemize}
 
 \chapter{Valutazione delle metriche}
-
-\section{Introduzione alle valutazioni}
 Per quanto riguarda le valutazioni del software OFIQ, verranno riportati ed analizzati esclusivamente i risultati delle metriche implementate nelle loro diverse versioni. 
 In particolare, per ogni metrica saranno presi in esame l'\texttt{Equal Error Rate} e la distribuzione dei risultati.
 
@@ -758,53 +732,97 @@ Per la sottomissione degli algoritmi sulla piattaforma FVC-Ongoing è necessario
 
 Dopo un'attenta analisi del protocollo richiesto dalla piattaforma FVC-Ongoing, è stato necessario rendere il software OFIQ conforme a tali specifiche ed adattare le metriche implementate.
 
-\subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione HSV)}
-La valutazione della metrica per il difetto degli occhi rossi è divisa in due parti. 
-Nella prima parte vengono analizzati i risultati ottenuti tramite l'algoritmo basato sullo spazio colore HSV, mentre nella seconda parte si utilizza lo spazio colore yCbCr. \\
-\texttt{Equal Error Rate}: 18.1\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_hsv}. 
+\subsection{Valutazione delle metriche di OFIQ}
+Non tutte le metriche valutate su FVC-Ongoing sono implementate in OFIQ, perciò alcune metriche non corrispondono precisamente alla richiesta.
+\medskip
+
+\begin{tabular}{llc}
+\toprule
+Metrica di FVC-Ongoing & Metrica utilizzata di OFIQ & Equal Error Rate (\%) \\
+\midrule
+2, Blurred & Sharpness & 6.9 \\
+4, Ink marked/creased & BackgroundUniformity & 18.8 \\
+5, Unnatural skin tone & NaturalColour & 7.9 \\
+ & UnderExposurePrevention \\ 6, Too dark/ligth & \& OverExposurePrevention & 32.5 \\
+7, Washed out & OverExposurePrevention & 50 \\
+8, Pixelation & Sharpness & 9.4 \\
+9, Hair across eyes & EyesVisible & 3.2 \\
+10, Eye closed & EyesOpen & 0.6 \\
+11, Varied background & BackgroundUniformity & 40.6 \\
+ & HeadPoseRoll \\ & \& HeadPosePitch \\ 12, Roll/pitch/yaw rotation & \& HeadPoseYaw & 3.8 \\
+13, Flash reflection on skin & DynamicRange & 85.6 \\
+15, Shadow behind head & BackgroundUniformity & 33.0 \\
+16, Shadow across face & DynamicRange & 46.2 \\
+17, Dark tintend lenses & EyesVisible & 0.6 \\
+18, Flash reflection on lenses & EyesVisible & 6.7 \\
+19, Frames to heavy & FaceOcclusionPrevention & 0.5 \\
+20, Frame covering eyes & EyesVisible & 5.0 \\
+21, Hat/cap & NoHeadCoverings & 1.9 \\
+22, Veil over face & FaceOcclusionPrevention & 0 \\
+23, Mouth open & MouthClosed & 0 \\
+24, Presence of other faces \\ or toys too close to face & SingleFacePresent & 47.7 \\
+\bottomrule
+\end{tabular}
+
+\subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi}
+\begin{tabular}{lcr}
+\toprule
+Versione dell'algoritmo & Equal Error Rate (\%) & Distribuzione degli score \\
+\midrule
+versione HSV & 18.1 & \Cref{fig:score_distribution_red_eye_with_hsv} \\
+versione YCBCR & 17.1 & \Cref{fig:score_distribution_red_eye_with_ycbcr} \\
+versione YCBCR \\ (senza esclusione dei pixel \\ della pupilla da quelli dell'iride) & 14.6 & \Cref{fig:score_distribution_red_eye_with_ycbcr_no_pupill} \\
+\bottomrule
+\end{tabular}
 
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/score-distribution-red-eye-with-hsv.png}
+    \includegraphics[width=.6\linewidth]{figures/score-distribution-red-eye-with-hsv.png}
     \caption{Distribuzione degli score per la metrica di rilevamento del difetto degli occhi rossi (versione HSV)}
     \label{fig:score_distribution_red_eye_with_hsv}
 \end{figure}
 
-\subsection{Valutazione metrica per il rilevamento del difetto degli occhi rossi (versione yCbCr)}
-La versione dell'algoritmo che utilizza lo spazio colore yCbCr ottiene risultati migliori rispetto alla versione HSV. \\
-\texttt{Equal Error Rate} (versione con esclusione della pupilla dal calcolo dei pixel dell'iride): 17.1\%. \\
-\texttt{Equal Error Rate} (versione senza esclusione della pupilla dal calcolo dei pixel dell'iride): 14.6\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_red_eye_with_ycbcr} (questa distribuzione è relativa alla versione senza l'esclusione della pupilla dal calcolo dei pixel dell'iride).
-
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/score-distribution-red-eye-with-ycbcr.png}
+    \includegraphics[width=.6\linewidth]{figures/score-distribution-red-eye-with-ycbcr.png}
     \caption{Distribuzione degli score per la metrica di rilevamento del difetto degli occhi rossi (versione yCbCr)}
     \label{fig:score_distribution_red_eye_with_ycbcr}
 \end{figure}
 
-\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
-I risultati ottenuti tramite il metodo algoritmico rientrano nella media degli algoritmi pubblicati sulla piattaforma. \\
-\texttt{Equal Error Rate}: 17.1\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_algo}.
-
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/score-distribution-frontal-gaze-algo.png}
-    \caption{Distribuzione degli score per la metrica di rilevamento dello sguardo frontale (metodo algoritmico)}
-    \label{fig:score_distribution_frontal_gaze_algo}
+    \includegraphics[width=.6\linewidth]{figures/score-distribution-red-eye-with-ycbcr-no-pupill.png}
+    \caption{Distribuzione degli score per la metrica di rilevamento del difetto degli occhi rossi (versione yCbCr senza esclusione dei pixel della pupilla dal calcolo dei pixel dell'iride)}
+    \label{fig:score_distribution_red_eye_with_ycbcr_no_pupill}
 \end{figure}
 
-\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
-\texttt{Equal Error Rate}: 12.9\%. \\
-La distribuzione degli score è riportata nel grafico \Cref{fig:score_distribution_frontal_gaze_l2cs}.
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale}
 
-\begin{figure}
+\begin{tabular}{lcr}
+\toprule
+Versione dell'algoritmo & Equal Error Rate (\%) & Distribuzione degli score \\
+\midrule
+metodo algoritmico & 17.1 & \Cref{fig:score_distribution_frontal_gaze_algo} \\
+metodo L2CS-Net & 12.9 & \Cref{fig:score_distribution_frontal_gaze_l2cs} \\
+\bottomrule
+\end{tabular}
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=.8\linewidth]{figures/score-distribution-frontal-gaze-l2cs.png}
-    \caption{Distribuzione degli score per la metrica di rilevamento dello sguardo frontale (versione L2CS-Net)}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=.6\linewidth]{figures/score-distribution-frontal-gaze-algo.png}
+        \caption{metodo algoritmico}
+        \label{fig:score_distribution_frontal_gaze_algo}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+    \includegraphics[width=.6\linewidth]{figures/score-distribution-frontal-gaze-l2cs.png}
+    \caption{versione L2CS-Net}
     \label{fig:score_distribution_frontal_gaze_l2cs}
+    \end{subfigure}
+    \caption{Distribuzione degli score per la metrica di rilevamento dello sguardo frontale}
 \end{figure}
 
 \section{Valutazione su dataset sintetici}
@@ -831,7 +849,33 @@ La valutazione delle metriche sui dataset ONOT e TONO è stata condotta secondo 
     \end{itemize}
 \end{enumerate}
 
-\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo algoritmico)}
+\subsection{Valutazione delle metriche di OFIQ}
+Non tutte le metriche valutabili con TONO sono implementate in OFIQ, perciò alcune metriche non corrispondono precisamente alla richiesta.
+\medskip
+
+\begin{tabular}{llc}
+\toprule
+Difetto di TONO & Metrica OFIQ & Equal Error Rate (\%) \\
+\midrule
+\texttt{bkg} $-$ Sfondo non uniforme & BackgroundUniformity & 30.9 \\
+\texttt{ce} $-$ Occhi chiusi & EyesOpen & 0.0 \\
+ & OverExposurePrevention \\ \texttt{expos} $-$ Esposizione errata & \& UnderExposurePrevention & 42.4 \\
+\texttt{sat} $-$ Saturazione errata & NaturalColour & 10.5 \\
+\texttt{cap} $-$ Testa coperta & NoHeadCoverings & 0.3 \\
+\texttt{sm} $-$ Sorriso & ExpressionNeutrality & 3.9 \\
+\texttt{mkup} $-$ Trucco & FaceOcclusionPrevention & 54.7 \\
+\texttt{sun} $-$ Occhiali da sole & EyesVisible & 0.0 \\
+\texttt{pixel} $-$ Immagine pixelizzata & Sharpness & 9.7 \\
+\texttt{zoom} $-$ Distanza errata & HeadSize & 87.6 \\
+\texttt{ceg} $-$ Occhi chiusi (con occhiali) & EyesOpen & 0.0 \\
+\texttt{light} $-$ Illuminazione non uniforme & IlluminationUniformity & 45.6 \\
+\texttt{oof} $-$ Sfocatura & Sharpness & 0.0 \\
+\texttt{poster} $-$ Posterizzazione & DynamicRange & 8.2 \\
+\texttt{tq} $-$ Posizione non frontale & HeadPoseYaw & 5.8 \\
+\bottomrule
+\end{tabular}
+
+\subsection{Valutazione metrica per il rilevamento dello sguardo frontale}
 \label{chap:evalutazione_frontal_gaze_algo}
 Il dataset TONO contiene due cartelle con immagini relative al difetto dello sguardo frontale:
 \begin{itemize}
@@ -839,15 +883,16 @@ Il dataset TONO contiene due cartelle con immagini relative al difetto dello sgu
     \item \textit{la\_2}: immagini di volti con lo sguardo rivolto verso sinistra.
 \end{itemize}
 
-\noindent Risultati per la cartella \textit{la\_1}: \\
-\texttt{Equal Error Rate}: 15.8\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_algo}. \\
-BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo}. \\
-
-\noindent Risultati per la cartella \textit{la\_2}: \\
-\texttt{Equal Error Rate}: 11.1\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo}. \\
-BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo}. 
+\begin{tabular}{llcll}
+\toprule
+Metodo & Cartella & EER (\%) & Distribuzione Score & BoxPlot  \\
+\midrule
+Algoritmico & la\_1 & 15.8 & \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_algo} & \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_algo} \\
+Algoritmico & la\_2 & 11.1 & \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_algo} & \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo} \\
+L2CS-Net & la\_1 & 18.8 & \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs} & \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs} \\
+L2CS-Net & la\_2 & 18.6 & \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs} & \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs} \\
+\bottomrule
+\end{tabular}
 
 
 \begin{figure}[htbp]
@@ -881,20 +926,6 @@ BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_algo}.
 
     \caption{Grafici sulla valutazione della metrica del rilevamento dello sguardo frontale (metodo algoritmico)}
 \end{figure}
-
-\subsection{Valutazione metrica per il rilevamento dello sguardo frontale (metodo L2CS-Net)}
-\label{chap:evaluatoin_l2csnet}
-Come introdotto in precedenza, i risultati sono riportati separatamente per le cartelle \textit{la\_1} e \textit{la\_2}.
-
-\noindent Risultati per la cartella \textit{la\_1}: \\
-\texttt{Equal Error Rate}: 18.8\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l1_frontal_gaze_l2cs}. \\
-BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l1_frontal_gaze_l2cs}. \\
-
-\noindent Risultati per la cartella \textit{la\_2}: \\
-\texttt{Equal Error Rate}: 18.6\%. \\
-Distribuzione degli score: \Cref{fig:score_distribution_tono_onot_l2_frontal_gaze_l2cs}. \\
-BoxPlot comparativo: \Cref{fig:box_plot_tono_onot_l2_frontal_gaze_l2cs}. 
 
 \begin{figure}[htbp]
     \centering
@@ -1013,9 +1044,17 @@ Non sono state riportate le metriche su TONO e ONOT per i modelli basati sui lan
 \end{figure}
 
 
-\chapter{Analisi dei risultati}
+\section{Analisi dei risultati}
 
-\section{Rilevamento del difetto degli occhi rossi}
+\subsection{Metriche di OFIQ}
+Le metriche implementate in OFIQ hanno in generale ottenuto buoni risultati, con valori di \textit{EER} elevati soltanto in compiti diversi rispetto a quelli per cui erano state originariamente progettate. Le uniche metriche a riportare prestazioni insufficienti, pur essendo valutate nel proprio contesto d'uso, sono: \begin{itemize}
+    \item \textit{Background Uniformity}: ha registrato un \textit{EER} di circa il 30\% sui dataset TONO e ONOT e di circa il 40\% nei test condotti su FVC-Ongoing.
+    \item \textit{UnderExposurePrevention \& OverExposurePrevention}: hanno registrato un \textit{EER} di circa il 40\% sui dataset TONO e ONOT e di circa il 30\% nei test condotti su FVC-Ongoing.
+\end{itemize}
+
+Al contrario, hanno mostrato performance ottimali, con valori di \textit{EER} inferiori al 10\%, le seguenti metriche: \textit{Natural Colour}, \textit{No Head Coverings}, \textit{Expression Neutrality}, \textit{Eyes Visible}, \textit{Sharpness}, \textit{Eyes Open}, \textit{Dynamic Range}, \textit{Head Pose} (Roll, Pitch, Yaw), \textit{Face Occlusion Prevention} e \textit{Mouth Closed}.
+
+\subsection{Rilevamento del difetto degli occhi rossi}
 Nella valutazione della metrica per il rilevamento degli occhi rossi si è osservato un miglioramento delle performance utilizzando lo spazio colore YCbCr rispetto a quello HSV.  
 Ciò è dovuto principalmente a due fattori:
 \begin{itemize}
@@ -1044,10 +1083,11 @@ Un fattore che potrebbe aver influito sull'\textit{Equal Error Rate} (EER), pari
     \label{fig:red_eye_false_negative_images}
 \end{figure}
 
-\section{Rilevamento del difetto dello sguardo frontale}
+\subsection{Rilevamento del difetto dello sguardo frontale}
 
-\subsection{Versione algoritmica}
-Le migliori prestazioni del metodo algoritmico sono state ottenute su immagini generate artificialmente e prive di altri difetti (dataset TONO e ONOT). Al contrario, su immagini reali (es. FVC-Ongoing) le performance risultano inferiori.  
+\paragraph{Versione algoritmica}
+Le migliori prestazioni del metodo algoritmico sono state ottenute su immagini generate artificialmente e prive di difetti aggiuntivi, come quelle dei dataset TONO e ONOT. Al contrario, nelle immagini reali, ad esempio quelle della piattaforma FVC-Ongoing, le performance risultano sensibilmente inferiori.
+Oltre alla performance, anche gli score ottenuti sui dataset TONO e ONOT sono significativamente più alti rispetto a quelli registrati su FVC-Ongoing.
 
 Le principali criticità del metodo includono:
 \begin{itemize}
@@ -1087,12 +1127,13 @@ Le principali criticità del metodo includono:
     \label{fig:frontal_gaze_algo_weakness}
 \end{figure}
 
-\subsection{Versione con l'utilizzo del modello L2CS-Net}
+\paragraph{Versione con l'utilizzo del modello L2CS-Net}
 Il metodo basato su L2CS-Net ha ottenuto i migliori risultati tra i modelli valutati, classificandosi al secondo posto tra i risultati pubblicati sulla piattaforma FVC-Ongoing. Nonostante ciò, gli score ottenuti sono ulteriormente migliorabili.  
 
 Un aspetto rilevante riguarda la pipeline di preprocessing, il modello L2CS-Net si aspetta come input un volto rilevato dal modello \textit{RetinaFace} (libreria python \texttt{face\_detection}), mentre per le valutazioni in OFIQ è stato utilizzato un diverso face detector in formato ONNX già integrato. In un caso specifico (\Cref{fig:frontal_gaze_l2cs_false_negative}), la stima dell'angolo yaw differisce in modo significativo (\texttt{0.03} radianti con \textit{RetinaFace} contro \texttt{0.27} radianti con il detector interno). Tuttavia, nella media delle immagini la differenza supera raramente \texttt{0.03} radianti.
 
-Inoltre, come mostrato in \Cref{fig:frontal_gaze_l2cs_weakness}, esistono casi in cui il modello assegna score migliori a un'immagine generata da AI con sguardo laterale (\Cref{fig:frontal_gaze_l2cs_false_positive}) rispetto a una reale con sguardo frontale (\Cref{fig:frontal_gaze_l2cs_false_negative}). 
+Inoltre, come mostrato in \Cref{fig:frontal_gaze_l2cs_weakness}, esistono casi in cui il modello assegna score migliori a un'immagine generata da AI con sguardo laterale (\Cref{fig:frontal_gaze_l2cs_false_positive}) rispetto a una reale con sguardo frontale (\Cref{fig:frontal_gaze_l2cs_false_negative}).
+In particolare le distribuzioni degli score mette in luce come questo metodo tenda a dare valutazioni migliori ad immagini generate da AI non conformi rispetto che ad immagini vere non conformi.
 
 \begin{figure}[htbp]
     \centering
@@ -1111,17 +1152,13 @@ Inoltre, come mostrato in \Cref{fig:frontal_gaze_l2cs_weakness}, esistono casi i
     \label{fig:frontal_gaze_l2cs_weakness}
 \end{figure}
 
-\subsection{Versione con modelli di machine learning}
+\paragraph{Versione con modelli di machine learning}
 I modelli descritti nel Chapter~\ref{chap:frontal_gaze_with_ml} mostrano significative difficoltà di generalizzazione: sebbene ottengano punteggi elevati sul test-set, come nel caso della CNN gdd che raggiunge un'accuratezza dell'85\%, le prestazioni calano drasticamente quando vengono valutati su dataset differenti. In particolare, i modelli ottenuti tramite Fine Tuning di MobileNetV2, testati sui dataset Tono e Onot, presentano equal error rate compresi tra il 46\% e il 58\%, rendendoli poco affidabili. Anche sul sottodataset Biolab, composto esclusivamente da immagini reali e compliance, le performance non migliorano, con un'accuratezza che si attesta intorno al 40\%.
 
 La CNN \texttt{gdd} ottiene performance migliori con EER compresi tra il 21\% e il 38\% su TONO e ONOT, e un'accuracy di circa il 66\% su Biolab. Tuttavia, anche questo modello risulta inferiore ai metodi algoritmico (\ref{chap:evalutazione_frontal_gaze_algo}) e L2CS-Net (\ref{chap:evaluatoin_l2csnet}).  
 
 Per quanto riguarda i modelli basati sui landmark facciali, le performance non sono attualmente affidabili. Va però evidenziato che il training è stato effettuato interamente su dati sintetici, con dataset ridotto (\(\sim1000\) immagini totali, divise in 80\% training e 20\% test) e sbilanciato (2 immagini non frontali ogni immagine frontale).
-Dai test condotti si può notare che:
-\begin{itemize}
-    \item i modelli che utilizzano Mediapipe come estrattore di landmark mostrano score e capacità di generalizzazione migliori rispetto ad altri approcci;
-    \item i modelli basati su XGBoost hanno ottenuto EER più bassi e una generalizzazione migliore rispetto alle reti neurali fully connected sviluppate con Keras.
-\end{itemize}
+Dai test condotti si può notare che il modello che utilizzano Mediapipe come estrattore di landmark mostra score e capacità di generalizzazione migliori rispetto all'altro approccio.
 
 \chapter{Conclusioni}
 Le valutazioni condotte sul software OFIQ e la relativa analisi dei risultati hanno confermato la solidità delle metriche già implementate nel software e nel draft ISO 29794-5. Sebbene i parametri considerati in OFIQ non coincidano pienamente con quelli previsti dallo standard ICAO, nelle metriche comuni il software ha dimostrato buone prestazioni sia su TONO e ONOT che su FVC Ongoing, mantenendo valori di Equal Error Rate sempre inferiori al 10\%.  

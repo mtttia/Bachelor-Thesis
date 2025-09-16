@@ -876,7 +876,7 @@ Difetto di TONO & Metrica OFIQ & Equal Error Rate (\%) \\
 \end{tabular}
 
 \subsection{Valutazione metrica per il rilevamento dello sguardo frontale}
-\label{chap:evalutazione_frontal_gaze_algo}
+\label{chap:evalutazione_frontal_gaze}
 Il dataset TONO contiene due cartelle con immagini relative al difetto dello sguardo frontale:
 \begin{itemize}
     \item \textit{la\_1}: immagini di volti con lo sguardo rivolto verso destra;
@@ -1155,7 +1155,7 @@ In particolare le distribuzioni degli score mette in luce come questo metodo ten
 \paragraph{Versione con modelli di machine learning}
 I modelli descritti nel Chapter~\ref{chap:frontal_gaze_with_ml} mostrano significative difficoltà di generalizzazione: sebbene ottengano punteggi elevati sul test-set, come nel caso della CNN gdd che raggiunge un'accuratezza dell'85\%, le prestazioni calano drasticamente quando vengono valutati su dataset differenti. In particolare, i modelli ottenuti tramite Fine Tuning di MobileNetV2, testati sui dataset Tono e Onot, presentano equal error rate compresi tra il 46\% e il 58\%, rendendoli poco affidabili. Anche sul sottodataset Biolab, composto esclusivamente da immagini reali e compliance, le performance non migliorano, con un'accuratezza che si attesta intorno al 40\%.
 
-La CNN \texttt{gdd} ottiene performance migliori con EER compresi tra il 21\% e il 38\% su TONO e ONOT, e un'accuracy di circa il 66\% su Biolab. Tuttavia, anche questo modello risulta inferiore ai metodi algoritmico (\ref{chap:evalutazione_frontal_gaze_algo}) e L2CS-Net (\ref{chap:evaluatoin_l2csnet}).  
+La CNN \texttt{gdd} ottiene performance migliori con EER compresi tra il 21\% e il 38\% su TONO e ONOT, e un'accuracy di circa il 66\% su Biolab. Tuttavia, anche questo modello risulta inferiore ai metodi algoritmico e L2CS-Net (\ref{chap:evalutazione_frontal_gaze}).  
 
 Per quanto riguarda i modelli basati sui landmark facciali, le performance non sono attualmente affidabili. Va però evidenziato che il training è stato effettuato interamente su dati sintetici, con dataset ridotto (\(\sim1000\) immagini totali, divise in 80\% training e 20\% test) e sbilanciato (2 immagini non frontali ogni immagine frontale).
 Dai test condotti si può notare che il modello che utilizzano Mediapipe come estrattore di landmark mostra score e capacità di generalizzazione migliori rispetto all'altro approccio.
